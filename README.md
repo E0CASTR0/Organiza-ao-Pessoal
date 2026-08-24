@@ -59,10 +59,12 @@ Depois de publicado, abra o link no **Safari** do iPhone → botão de compartil
 
 ## Ícone do app (logo)
 
-Os ícones em `public/icons/` já foram gerados a partir da logo. Pra trocar a logo no
-futuro, coloque a nova imagem (quadrada, ideal ≥1024×1024) em
-`assets-source/logo-source.jpeg` (ou ajuste o caminho em `scripts/generate-icons.mjs`)
-e rode:
+Os ícones em `public/icons/` já foram gerados a partir da logo (bloco "R", em
+`assets-source/logo-source-v2.jpeg`). Pra trocar a logo no futuro, coloque a nova imagem
+(quadrada, ideal ≥1024×1024) em `assets-source/` e ajuste o caminho/recorte em
+`scripts/generate-icons.mjs` (o recorte é calibrado pra imagem atual — uma logo com
+fundo/proporções diferentes pode precisar de outros valores de `BOX_*`/`ZOOM_PCT`),
+depois rode:
 
 ```bash
 npm run icons
