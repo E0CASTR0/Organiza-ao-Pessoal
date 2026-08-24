@@ -1,0 +1,11 @@
+@import 'tailwindcss';
+@import './theme/theme.css';
+
+/* As fontes (@fontsource) são importadas em main.tsx, não aqui — o bundler do Tailwind v4
+   não resolve/copia corretamente os arquivos woff2 referenciados via @import dentro do CSS. */
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+}

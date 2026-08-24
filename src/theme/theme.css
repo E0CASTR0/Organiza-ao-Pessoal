@@ -1,0 +1,108 @@
+/*
+ * Paleta "old money" — preto/grafite/prata, sóbria, sem cores saturadas.
+ * Extraída da referência visual do usuário (tela do iPhone em preto e branco,
+ * ícones monocromáticos, widgets em preto/cinza).
+ *
+ * --success / --danger existem só pra estados semânticos (pago/não pago,
+ * comprado/não comprado, zona de perigo) e são deliberadamente dessaturados
+ * pra não quebrar o visual monocromático.
+ */
+
+:root {
+  --font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+}
+
+/* Tema escuro — padrão do app */
+:root,
+[data-theme='dark'] {
+  --bg-base: #060606;
+  --bg-elevated-1: #121211;
+  --bg-elevated-2: #1b1b19;
+  --bg-elevated-3: #262523;
+
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-default: rgba(255, 255, 255, 0.14);
+
+  --text-primary: #f3f2ee;
+  --text-secondary: #a6a49c;
+  --text-tertiary: #6f6d66;
+
+  --accent: #c7c3b8;
+  --accent-strong: #ece9e0;
+  --accent-pressed: #a29e92;
+  --accent-contrast: #0a0a0a;
+
+  --success: #6f8f74;
+  --success-strong: #86a88c;
+  --success-contrast: #0a0a0a;
+
+  --danger: #a4483f;
+  --danger-strong: #c15c52;
+  --danger-contrast: #f3f2ee;
+
+  --shadow: rgba(0, 0, 0, 0.55);
+  --overlay: rgba(0, 0, 0, 0.6);
+}
+
+/* Tema claro — inverso real do escuro, mesma identidade */
+[data-theme='light'] {
+  --bg-base: #f6f4ef;
+  --bg-elevated-1: #ffffff;
+  --bg-elevated-2: #efece4;
+  --bg-elevated-3: #e4e0d5;
+
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-default: rgba(0, 0, 0, 0.15);
+
+  --text-primary: #1b1a17;
+  --text-secondary: #58554c;
+  --text-tertiary: #8b8779;
+
+  --accent: #4a463c;
+  --accent-strong: #24221d;
+  --accent-pressed: #605c50;
+  --accent-contrast: #f6f4ef;
+
+  --success: #4f6f54;
+  --success-strong: #3d5941;
+  --success-contrast: #f6f4ef;
+
+  --danger: #8a3a32;
+  --danger-strong: #6e2e28;
+  --danger-contrast: #f6f4ef;
+
+  --shadow: rgba(0, 0, 0, 0.12);
+  --overlay: rgba(20, 18, 14, 0.45);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+/* Scrollbars discretas (desktop) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-default) transparent;
+}
