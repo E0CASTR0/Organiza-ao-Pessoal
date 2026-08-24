@@ -59,6 +59,15 @@ Depois de publicado, abra o link no **Safari** do iPhone → botão de compartil
 
 ## Ícone do app (logo)
 
-O ícone que aparece na tela de início ainda precisa ser gerado a partir do arquivo
-real da logo. Coloque a imagem em `assets-source/logo-source.png` (quadrada, ideal
-≥1024×1024) e gere o conjunto de ícones em `public/icons/` antes de publicar.
+Os ícones em `public/icons/` já foram gerados a partir da logo. Pra trocar a logo no
+futuro, coloque a nova imagem (quadrada, ideal ≥1024×1024) em
+`assets-source/logo-source.jpeg` (ou ajuste o caminho em `scripts/generate-icons.mjs`)
+e rode:
+
+```bash
+npm run icons
+```
+
+Isso regenera favicon, ícone da tela de início do iPhone (apple-touch-icon) e os
+ícones do manifest PWA (192, 512 e 512 maskable, esse último com margem de segurança
+pra não cortar a coroa/texto quando o Android recorta em círculo).

@@ -19,7 +19,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/favicon.ico'],
+      includeAssets: ['icons/favicon-32.png', 'icons/apple-touch-icon-180.png'],
       manifest: {
         name: 'Rômulo — Organização Pessoal',
         short_name: 'Rômulo',
