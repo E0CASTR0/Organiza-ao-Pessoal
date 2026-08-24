@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { HashRouter } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
+import { ErrorBoundary } from '@/components/layout/ErrorBoundary'
 import { ThemeProvider } from '@/theme/ThemeProvider'
 import { AppRoutes } from '@/router/routes'
 import { ensureSeedData } from '@/db/db'
@@ -18,7 +19,9 @@ export default function App() {
     <ThemeProvider>
       <HashRouter>
         <AppShell>
-          <AppRoutes />
+          <ErrorBoundary>
+            <AppRoutes />
+          </ErrorBoundary>
         </AppShell>
       </HashRouter>
     </ThemeProvider>

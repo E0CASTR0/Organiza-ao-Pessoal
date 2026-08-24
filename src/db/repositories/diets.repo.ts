@@ -2,8 +2,11 @@ import { db } from '../db'
 import type { Diet } from '../models'
 import { moveToTrash } from './trash.repo'
 
-export function listDiets() {
-  return db.diets.orderBy('updatedAt').reverse().toArray()
+export async function listDiets() {
+  // 'updatedAt' não é um índice no schema (só 'id') — orderBy() exige índice, então
+  // ordenamos em memória, o que é perfeitamente rápido pro volume de dados de um app pessoal.
+  const all = await db.diets.toArray()
+  return all.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
 }
 
 export async function addDiet(title: string, content: string): Promise<void> {

@@ -1,6 +1,7 @@
 import Dexie, { type EntityTable } from 'dexie'
 import type {
   DailyGoal,
+  DailyGoalCompletion,
   EventItem,
   MonthlyPriority,
   ShoppingItem,
@@ -20,6 +21,7 @@ import type {
 
 export const db = new Dexie('organizacao-pessoal') as Dexie & {
   dailyGoals: EntityTable<DailyGoal, 'id'>
+  dailyGoalCompletions: EntityTable<DailyGoalCompletion, 'id'>
   events: EntityTable<EventItem, 'id'>
   monthlyPriorities: EntityTable<MonthlyPriority, 'id'>
   shoppingItems: EntityTable<ShoppingItem, 'id'>
@@ -59,6 +61,53 @@ db.version(1).stores({
   settings: 'id',
   trashItems: 'id, entityType, deletedAt',
 })
+
+// v2: metas do dia viram persistentes (cadastra uma vez, nunca some sozinha) — a conclusão
+// de cada dia passa a ficar numa tabela separada (dailyGoalCompletions), do mesmo jeito que
+// fixedBillPayments já controla pago/não-pago por mês sem duplicar a conta em si. O upgrade
+// abaixo preserva toda meta já criada: se ela estava marcada como concluída na data antiga,
+// grava essa conclusão na nova tabela antes de tirar os campos date/completed da meta.
+db.version(2)
+  .stores({
+    dailyGoals: 'id, order',
+    dailyGoalCompletions: 'id, goalId, date',
+    events: 'id, date',
+    monthlyPriorities: 'id, month, order',
+    shoppingItems: 'id, order',
+    workTasks: 'id, order',
+    investmentCategories: 'id, order',
+    investments: 'id, categoryId',
+    investmentSnapshots: 'id, investmentId, month',
+    workoutDays: 'id, weekday, order',
+    exercises: 'id, workoutDayId, order',
+    diets: 'id',
+    fixedBills: 'id, dueDay, order',
+    fixedBillPayments: 'id, fixedBillId, month',
+    profile: 'id',
+    settings: 'id',
+    trashItems: 'id, entityType, deletedAt',
+  })
+  .upgrade(async (tx) => {
+    interface OldDailyGoal {
+      id: string
+      date?: string
+      completed?: boolean
+    }
+    const oldGoals: OldDailyGoal[] = await tx.table('dailyGoals').toArray()
+    const completions = oldGoals
+      .filter((g) => g.completed && g.date)
+      .map((g) => ({ id: crypto.randomUUID(), goalId: g.id, date: g.date as string, completedAt: new Date().toISOString() }))
+    if (completions.length > 0) {
+      await tx.table('dailyGoalCompletions').bulkAdd(completions)
+    }
+    await tx
+      .table('dailyGoals')
+      .toCollection()
+      .modify((g: OldDailyGoal & Record<string, unknown>) => {
+        delete g.date
+        delete g.completed
+      })
+  })
 
 /** Garante as linhas singleton (profile/settings) e os dados iniciais na primeira vez que o app abre.
  * Roda tudo dentro de UMA transação: como o React.StrictMode (dev) dispara o efeito de montagem duas

@@ -4,13 +4,22 @@
 
 export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6 // 0 = segunda ... 6 = domingo
 
+// Meta persistente — cadastrada uma vez, some só se for apagada (vai pra Lixeira).
+// A conclusão de cada dia fica separada em DailyGoalCompletion, então o check reinicia
+// sozinho à meia-noite (é só o dia mudar que a consulta de "hoje" não encontra mais
+// uma conclusão pra essa data) sem precisar de nenhum agendador/cron.
 export interface DailyGoal {
   id: string
-  date: string // 'AAAA-MM-DD'
   title: string
-  completed: boolean
   order: number
   createdAt: string
+}
+
+export interface DailyGoalCompletion {
+  id: string
+  goalId: string
+  date: string // 'AAAA-MM-DD'
+  completedAt: string
 }
 
 export interface EventItem {
@@ -117,6 +126,7 @@ export interface FixedBill {
   dueDay: number // 1-31
   value: number
   notes: string
+  imageBase64: string | null
   active: boolean
   order: number
   createdAt: string

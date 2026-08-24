@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from '@/components/ui/icons'
+import { ChevronLeftIcon, ChevronRightIcon, PlusIcon, CalendarIcon } from '@/components/ui/icons'
 import { listEventsByDate, listEventsBetween } from '@/db/repositories/events.repo'
 import { todayKey, toDateKey, addDays, startOfWeek, formatDateLong, formatDateShort, WEEKDAY_SHORT, toWeekdayIndex } from '@/utils/date'
 import { EventFormModal } from './EventFormModal'
@@ -41,6 +41,7 @@ export function AgendaPage() {
     <div className="flex flex-col gap-5">
       <PageHeader
         title="Agenda"
+        icon={<CalendarIcon width={20} height={20} />}
         action={
           <Button size="sm" onClick={openNew} aria-label="Novo evento">
             <PlusIcon width={16} height={16} />

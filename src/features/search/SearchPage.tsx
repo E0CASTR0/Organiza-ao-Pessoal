@@ -6,6 +6,7 @@ import { PageHeader } from '@/components/ui/PageHeader'
 import { Card } from '@/components/ui/Card'
 import { TextField } from '@/components/ui/TextField'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { SearchIcon } from '@/components/ui/icons'
 import { db } from '@/db/db'
 
 interface SearchResult {
@@ -43,7 +44,7 @@ export function SearchPage() {
   return (
     <div className="flex flex-col gap-5">
       <BackHeader title="Mais" to="/mais" />
-      <PageHeader title="Buscar" />
+      <PageHeader title="Buscar" icon={<SearchIcon width={20} height={20} />} />
       <TextField value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar em compras, prioridades, tarefas, contas, dietas..." autoFocus />
 
       {query.trim() && results.length === 0 && <EmptyState title="Nada encontrado" description="Tente outro termo de busca." />}

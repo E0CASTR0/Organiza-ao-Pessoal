@@ -3,6 +3,7 @@ import { Modal } from '@/components/ui/Modal'
 import { TextField, TextArea } from '@/components/ui/TextField'
 import { Button } from '@/components/ui/Button'
 import { Toggle } from '@/components/ui/Toggle'
+import { ImagePicker } from '@/components/ui/ImagePicker'
 import { addFixedBill, updateFixedBill, removeFixedBill, toggleFixedBillActive } from '@/db/repositories/fixedBills.repo'
 import type { FixedBill } from '@/db/models'
 
@@ -17,6 +18,7 @@ export function FixedBillFormModal({ open, onClose, editing }: FixedBillFormModa
   const [dueDay, setDueDay] = useState('1')
   const [value, setValue] = useState('')
   const [notes, setNotes] = useState('')
+  const [image, setImage] = useState<string | null>(null)
 
   useEffect(() => {
     if (!open) return
@@ -24,11 +26,18 @@ export function FixedBillFormModal({ open, onClose, editing }: FixedBillFormModa
     setDueDay(editing ? String(editing.dueDay) : '1')
     setValue(editing ? String(editing.value) : '')
     setNotes(editing?.notes ?? '')
+    setImage(editing?.imageBase64 ?? null)
   }, [open, editing])
 
   const handleSave = async () => {
     if (!name.trim()) return
-    const input = { name: name.trim(), dueDay: Math.min(31, Math.max(1, Number(dueDay) || 1)), value: Number(value) || 0, notes }
+    const input = {
+      name: name.trim(),
+      dueDay: Math.min(31, Math.max(1, Number(dueDay) || 1)),
+      value: Number(value) || 0,
+      notes,
+      imageBase64: image,
+    }
     if (editing) {
       await updateFixedBill(editing.id, input)
     } else {
@@ -45,6 +54,7 @@ export function FixedBillFormModal({ open, onClose, editing }: FixedBillFormModa
   return (
     <Modal open={open} onClose={onClose} title={editing ? 'Editar conta' : 'Nova conta fixa'}>
       <div className="flex flex-col gap-3.5">
+        <ImagePicker value={image} onChange={setImage} />
         <TextField label="Nome" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Aluguel, academia, streaming..." autoFocus />
         <div className="flex gap-3">
           <TextField label="Dia do vencimento" type="number" inputMode="numeric" min={1} max={31} value={dueDay} onChange={(e) => setDueDay(e.target.value)} className="flex-1" />

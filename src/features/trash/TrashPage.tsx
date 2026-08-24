@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { TrashIcon } from '@/components/ui/icons'
 import { listTrash, restoreTrashItem, purgeTrashItem, purgeAllTrash } from '@/db/repositories/trash.repo'
 
 const ENTITY_LABELS: Record<string, string> = {
@@ -32,6 +33,7 @@ export function TrashPage() {
       <PageHeader
         title="Lixeira"
         subtitle="Itens excluídos ficam aqui até você restaurar ou apagar de vez."
+        icon={<TrashIcon width={20} height={20} />}
         action={
           items.length > 0 && (
             <Button size="sm" variant="ghost" onClick={() => setConfirmPurgeAll(true)}>

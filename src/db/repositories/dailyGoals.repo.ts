@@ -1,28 +1,43 @@
 import { db } from '../db'
-import type { DailyGoal } from '../models'
+import type { DailyGoal, DailyGoalCompletion } from '../models'
 import { moveToTrash } from './trash.repo'
 
-export function listGoalsByDate(date: string) {
-  return db.dailyGoals.where('date').equals(date).sortBy('order')
+/** Lista as metas cadastradas — persistentes, aparecem todo dia até serem apagadas de propósito. */
+export function listGoals() {
+  return db.dailyGoals.orderBy('order').toArray()
 }
 
-export async function addGoal(date: string, title: string): Promise<void> {
-  const count = await db.dailyGoals.where('date').equals(date).count()
+/** Conclusões do dia informado — é essa consulta, escopada por data, que faz o check
+ * "reiniciar sozinho" à meia-noite: no dia seguinte simplesmente não existe conclusão
+ * ainda pra essa data, sem precisar apagar nem agendar nada. */
+export function listCompletionsByDate(date: string) {
+  return db.dailyGoalCompletions.where('date').equals(date).toArray()
+}
+
+export async function addGoal(title: string): Promise<void> {
+  const count = await db.dailyGoals.count()
   const goal: DailyGoal = {
     id: crypto.randomUUID(),
-    date,
     title,
-    completed: false,
     order: count,
     createdAt: new Date().toISOString(),
   }
   await db.dailyGoals.add(goal)
 }
 
-export async function toggleGoal(id: string): Promise<void> {
-  const goal = await db.dailyGoals.get(id)
-  if (!goal) return
-  await db.dailyGoals.update(id, { completed: !goal.completed })
+export async function toggleGoalForDate(goalId: string, date: string): Promise<void> {
+  const existing = await db.dailyGoalCompletions.where({ goalId, date }).first()
+  if (existing) {
+    await db.dailyGoalCompletions.delete(existing.id)
+  } else {
+    const completion: DailyGoalCompletion = {
+      id: crypto.randomUUID(),
+      goalId,
+      date,
+      completedAt: new Date().toISOString(),
+    }
+    await db.dailyGoalCompletions.add(completion)
+  }
 }
 
 export async function renameGoal(id: string, title: string): Promise<void> {
@@ -34,4 +49,5 @@ export async function removeGoal(id: string): Promise<void> {
   if (!goal) return
   await moveToTrash('dailyGoals', id, goal.title, goal)
   await db.dailyGoals.delete(id)
+  await db.dailyGoalCompletions.where('goalId').equals(id).delete()
 }

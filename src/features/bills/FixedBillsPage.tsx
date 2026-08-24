@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/Card'
 import { Checkbox } from '@/components/ui/Checkbox'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { PlusIcon } from '@/components/ui/icons'
+import { PlusIcon, ReceiptIcon } from '@/components/ui/icons'
 import { listFixedBills, listPaymentsByMonth, togglePaid } from '@/db/repositories/fixedBills.repo'
 import { currentMonthKey, formatMonthLabel } from '@/utils/date'
 import { formatCurrency } from '@/utils/currency'
@@ -42,6 +42,7 @@ export function FixedBillsPage() {
       <PageHeader
         title="Contas Fixas"
         subtitle={formatMonthLabel(month)}
+        icon={<ReceiptIcon width={20} height={20} />}
         action={
           <Button size="sm" onClick={openNew}>
             <PlusIcon width={16} height={16} />
@@ -71,6 +72,9 @@ export function FixedBillsPage() {
             .map((bill) => (
               <Card key={bill.id} className="flex items-center justify-between gap-3 p-3.5">
                 <Checkbox checked={isPaid(bill.id)} onChange={() => void togglePaid(bill.id, month)} />
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-elevated-3)] text-[var(--accent)]">
+                  {bill.imageBase64 ? <img src={bill.imageBase64} alt="" className="h-full w-full object-cover" /> : <ReceiptIcon width={18} height={18} />}
+                </span>
                 <button className="min-w-0 flex-1 text-left" onClick={() => openEdit(bill)}>
                   <p className="truncate font-medium text-[var(--text-primary)]">{bill.name}</p>
                   <p className="text-xs text-[var(--text-tertiary)]">Vence dia {bill.dueDay}</p>

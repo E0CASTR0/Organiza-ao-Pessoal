@@ -6,7 +6,7 @@ import { Toggle } from '@/components/ui/Toggle'
 import { useTheme } from '@/theme/useTheme'
 import { BackupSection } from './BackupSection'
 import { DangerZone } from './DangerZone'
-import { TrashIcon } from '@/components/ui/icons'
+import { TrashIcon, SettingsIcon } from '@/components/ui/icons'
 
 export function SettingsPage() {
   const { theme, toggleTheme } = useTheme()
@@ -14,7 +14,7 @@ export function SettingsPage() {
   return (
     <div className="flex flex-col gap-5">
       <BackHeader title="Mais" to="/mais" />
-      <PageHeader title="Configurações" />
+      <PageHeader title="Configurações" icon={<SettingsIcon width={20} height={20} />} />
 
       <Card className="flex items-center justify-between p-4">
         <div>

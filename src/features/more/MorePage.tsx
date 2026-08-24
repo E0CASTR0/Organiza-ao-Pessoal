@@ -1,6 +1,6 @@
 import { PageHeader } from '@/components/ui/PageHeader'
 import { HubGrid, type HubTile } from '@/components/layout/HubGrid'
-import { WalletIcon, ReceiptIcon, UserIcon, SettingsIcon, SearchIcon } from '@/components/ui/icons'
+import { WalletIcon, ReceiptIcon, UserIcon, SettingsIcon, SearchIcon, GridIcon } from '@/components/ui/icons'
 import { Link } from 'react-router-dom'
 
 const tiles: HubTile[] = [
@@ -13,7 +13,7 @@ const tiles: HubTile[] = [
 export function MorePage() {
   return (
     <div className="flex flex-col gap-5">
-      <PageHeader title="Mais" />
+      <PageHeader title="Mais" icon={<GridIcon width={20} height={20} />} />
       <Link
         to="/mais/busca"
         className="flex items-center gap-2.5 rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--bg-elevated-1)] px-4 py-3 text-[var(--text-tertiary)] transition-colors hover:text-[var(--text-secondary)]"

@@ -1,13 +1,14 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { PageHeader } from '@/components/ui/PageHeader'
+import { Avatar } from '@/components/ui/Avatar'
 import { Card } from '@/components/ui/Card'
 import { Checkbox } from '@/components/ui/Checkbox'
 import { Button } from '@/components/ui/Button'
 import { TextField } from '@/components/ui/TextField'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TrashIcon, CalendarIcon, ReceiptIcon, PlusIcon } from '@/components/ui/icons'
-import { listGoalsByDate, addGoal, toggleGoal, removeGoal } from '@/db/repositories/dailyGoals.repo'
+import { listGoals, listCompletionsByDate, addGoal, toggleGoalForDate, removeGoal } from '@/db/repositories/dailyGoals.repo'
 import { listEventsByDate } from '@/db/repositories/events.repo'
 import { listFixedBills } from '@/db/repositories/fixedBills.repo'
 import { todayKey, formatDateLong } from '@/utils/date'
@@ -19,7 +20,8 @@ export function HomePage() {
   const [newGoal, setNewGoal] = useState('')
 
   const profile = useLiveQuery(() => getProfile(), [])
-  const goals = useLiveQuery(() => listGoalsByDate(today), [today]) ?? []
+  const goals = useLiveQuery(() => listGoals(), []) ?? []
+  const completions = useLiveQuery(() => listCompletionsByDate(today), [today]) ?? []
   const todayEvents = useLiveQuery(() => listEventsByDate(today), [today]) ?? []
   const bills = useLiveQuery(() => listFixedBills(), []) ?? []
 
@@ -37,18 +39,25 @@ export function HomePage() {
   const handleAddGoal = async () => {
     const title = newGoal.trim()
     if (!title) return
-    await addGoal(today, title)
+    await addGoal(title)
     setNewGoal('')
   }
+
+  const isGoalDone = (goalId: string) => completions.some((c) => c.goalId === goalId)
 
   const greetingName = profile?.nickname || profile?.displayName
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader
-        title={greetingName ? `Olá, ${greetingName}` : 'Início'}
-        subtitle={formatDateLong(today)}
-      />
+      <Link to="/mais/perfil" className="mb-1 flex items-center gap-3">
+        <Avatar photoBase64={profile?.photoBase64} size={52} />
+        <div>
+          <h1 className="font-[var(--font-heading)] text-2xl font-semibold text-[var(--text-primary)]">
+            {greetingName ? `Olá, ${greetingName}` : 'Início'}
+          </h1>
+          <p className="mt-0.5 text-sm text-[var(--text-secondary)]">{formatDateLong(today)}</p>
+        </div>
+      </Link>
 
       <section>
         <h2 className="mb-2.5 text-sm font-medium uppercase tracking-wide text-[var(--text-tertiary)]">Metas de hoje</h2>
@@ -58,8 +67,8 @@ export function HomePage() {
             {goals.map((goal) => (
               <div key={goal.id} className="flex items-center justify-between gap-2">
                 <Checkbox
-                  checked={goal.completed}
-                  onChange={() => void toggleGoal(goal.id)}
+                  checked={isGoalDone(goal.id)}
+                  onChange={() => void toggleGoalForDate(goal.id, today)}
                   label={goal.title}
                 />
                 <button
@@ -82,7 +91,7 @@ export function HomePage() {
               <TextField
                 value={newGoal}
                 onChange={(e) => setNewGoal(e.target.value)}
-                placeholder="Nova meta para hoje"
+                placeholder="Nova meta (repete todo dia)"
                 className="flex-1"
               />
               <Button type="submit" size="md" aria-label="Adicionar meta">
@@ -112,8 +121,8 @@ export function HomePage() {
             ))}
             {upcomingBills.map((bill) => (
               <Card key={bill.id} className="flex items-center gap-3 p-3.5">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--bg-elevated-3)] text-[var(--accent)]">
-                  <ReceiptIcon width={18} height={18} />
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-elevated-3)] text-[var(--accent)]">
+                  {bill.imageBase64 ? <img src={bill.imageBase64} alt="" className="h-full w-full object-cover" /> : <ReceiptIcon width={18} height={18} />}
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium text-[var(--text-primary)]">{bill.name}</p>

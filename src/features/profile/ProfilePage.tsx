@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/Card'
 import { TextField } from '@/components/ui/TextField'
 import { Button } from '@/components/ui/Button'
 import { ImagePicker } from '@/components/ui/ImagePicker'
+import { UserIcon } from '@/components/ui/icons'
 import { getProfile, updateProfile } from '@/db/repositories/profile.repo'
 
 export function ProfilePage() {
@@ -31,7 +32,7 @@ export function ProfilePage() {
   return (
     <div className="flex flex-col gap-5">
       <BackHeader title="Mais" to="/mais" />
-      <PageHeader title="Perfil" />
+      <PageHeader title="Perfil" icon={<UserIcon width={20} height={20} />} />
 
       <Card className="flex flex-col gap-4 p-4">
         <ImagePicker value={photo} onChange={setPhoto} shape="circle" size={96} />

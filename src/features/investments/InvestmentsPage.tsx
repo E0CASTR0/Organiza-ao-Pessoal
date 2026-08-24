@@ -5,7 +5,7 @@ import { PageHeader } from '@/components/ui/PageHeader'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { PlusIcon, TrashIcon } from '@/components/ui/icons'
+import { PlusIcon, TrashIcon, WalletIcon } from '@/components/ui/icons'
 import { listCategories, listInvestments, removeCategory } from '@/db/repositories/investments.repo'
 import { formatCurrency } from '@/utils/currency'
 import { InvestmentFormModal } from './InvestmentFormModal'
@@ -49,6 +49,7 @@ export function InvestmentsPage() {
       <BackHeader title="Mais" to="/mais" />
       <PageHeader
         title="Investimentos"
+        icon={<WalletIcon width={20} height={20} />}
         action={
           <Button size="sm" onClick={() => setCategoryModalOpen(true)}>
             <PlusIcon width={16} height={16} />

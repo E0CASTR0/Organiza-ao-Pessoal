@@ -11,6 +11,7 @@ export interface FixedBillInput {
   dueDay: number
   value: number
   notes: string
+  imageBase64: string | null
 }
 
 export async function addFixedBill(input: FixedBillInput): Promise<void> {
