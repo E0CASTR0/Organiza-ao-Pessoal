@@ -6,9 +6,13 @@
     <title>Rômulo — Organização Pessoal</title>
     <meta name="description" content="App pessoal de agenda, metas, investimentos, treino, dieta e finanças." />
 
-    <!-- PWA / iOS "Adicionar à Tela de Início" -->
-    <link rel="icon" type="image/png" href="icons/favicon-32.png" />
-    <link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png" />
+    <!-- PWA / iOS "Adicionar à Tela de Início" — o ?v= existe só pra forçar o Safari a
+         buscar o arquivo de novo quando a logo trocar (o iOS guarda esse ícone específico
+         de forma bem mais teimosa que o resto do site; sem isso ele pode continuar
+         mostrando uma versão antiga mesmo com o arquivo já atualizado no servidor).
+         Ao trocar a logo de novo no futuro, incremente esse número. -->
+    <link rel="icon" type="image/png" href="icons/favicon-32.png?v=2" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png?v=2" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Rômulo" />
