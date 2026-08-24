@@ -20,6 +20,7 @@ const ENTITY_LABELS: Record<string, string> = {
   workoutDays: 'Dia de treino',
   exercises: 'Exercício',
   diets: 'Dieta',
+  dietMealItems: 'Prato da dieta',
   fixedBills: 'Conta fixa',
 }
 

@@ -111,13 +111,27 @@ export interface Exercise {
   order: number
 }
 
+export type MealSlotKey = 'cafeDaManha' | 'preTreino' | 'almoco' | 'lancheDaTarde' | 'posTreino' | 'janta' | 'ceia'
+
 export interface Diet {
   id: string
   title: string
   content: string
   isActive: boolean
+  enabledMeals: MealSlotKey[] // quais refeições essa dieta usa — todas opcionais
   createdAt: string
   updatedAt: string
+}
+
+/** Prato/alimento dentro de uma refeição de uma dieta — plano de alimentação, não um
+ * diário: não é escopado por data, fica sempre visível enquanto a dieta existir. */
+export interface DietMealItem {
+  id: string
+  dietId: string
+  meal: MealSlotKey
+  name: string
+  calories: number | null
+  order: number
 }
 
 export interface FixedBill {

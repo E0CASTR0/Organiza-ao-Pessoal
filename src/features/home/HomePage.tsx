@@ -11,9 +11,12 @@ import { TrashIcon, CalendarIcon, ReceiptIcon, PlusIcon } from '@/components/ui/
 import { listGoals, listCompletionsByDate, addGoal, toggleGoalForDate, removeGoal } from '@/db/repositories/dailyGoals.repo'
 import { listEventsByDate } from '@/db/repositories/events.repo'
 import { listFixedBills } from '@/db/repositories/fixedBills.repo'
+import { getActiveDiet } from '@/db/repositories/diets.repo'
 import { todayKey, formatDateLong } from '@/utils/date'
 import { formatCurrency } from '@/utils/currency'
 import { getProfile } from '@/db/repositories/profile.repo'
+import { MealSlotRow } from './MealSlotRow'
+import { MEAL_SLOT_ORDER } from '@/utils/mealSlots'
 
 export function HomePage() {
   const today = todayKey()
@@ -24,6 +27,7 @@ export function HomePage() {
   const completions = useLiveQuery(() => listCompletionsByDate(today), [today]) ?? []
   const todayEvents = useLiveQuery(() => listEventsByDate(today), [today]) ?? []
   const bills = useLiveQuery(() => listFixedBills(), []) ?? []
+  const activeDiet = useLiveQuery(() => getActiveDiet(), [])
 
   const upcomingBills = bills.filter((bill) => {
     if (!bill.active) return false
@@ -100,6 +104,24 @@ export function HomePage() {
             </form>
           </div>
         </Card>
+      </section>
+
+      <section>
+        <h2 className="mb-2.5 text-sm font-medium uppercase tracking-wide text-[var(--text-tertiary)]">Alimentação</h2>
+        {!activeDiet ? (
+          <EmptyState title="Nenhuma dieta ativa" description="Crie e ative uma dieta em Rotina > Dieta pra acompanhar suas refeições aqui." />
+        ) : activeDiet.enabledMeals.length === 0 ? (
+          <EmptyState title="Nenhuma refeição configurada" description={`Edite "${activeDiet.title}" em Rotina > Dieta e escolha quais refeições aparecem aqui.`} />
+        ) : (
+          <Card className="flex flex-col gap-4 p-4">
+            {activeDiet.enabledMeals
+              .slice()
+              .sort((a, b) => MEAL_SLOT_ORDER.indexOf(a) - MEAL_SLOT_ORDER.indexOf(b))
+              .map((meal) => (
+                <MealSlotRow key={meal} dietId={activeDiet.id} meal={meal} />
+              ))}
+          </Card>
+        )}
       </section>
 
       <section>

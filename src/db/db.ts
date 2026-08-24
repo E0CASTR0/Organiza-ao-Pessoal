@@ -12,6 +12,7 @@ import type {
   WorkoutDay,
   Exercise,
   Diet,
+  DietMealItem,
   FixedBill,
   FixedBillPayment,
   Profile,
@@ -32,6 +33,7 @@ export const db = new Dexie('organizacao-pessoal') as Dexie & {
   workoutDays: EntityTable<WorkoutDay, 'id'>
   exercises: EntityTable<Exercise, 'id'>
   diets: EntityTable<Diet, 'id'>
+  dietMealItems: EntityTable<DietMealItem, 'id'>
   fixedBills: EntityTable<FixedBill, 'id'>
   fixedBillPayments: EntityTable<FixedBillPayment, 'id'>
   profile: EntityTable<Profile, 'id'>
@@ -106,6 +108,42 @@ db.version(2)
       .modify((g: OldDailyGoal & Record<string, unknown>) => {
         delete g.date
         delete g.completed
+      })
+  })
+
+// v3: dietas passam a ter refeições configuráveis (café da manhã, almoço, pré/pós-treino,
+// janta, ceia — todas opcionais) e cada refeição pode ter pratos/alimentos com calorias
+// (dietMealItems), adicionados direto na tela inicial. Dietas já existentes recebem um
+// conjunto padrão (café da manhã, almoço, janta) que dá pra ajustar depois.
+db.version(3)
+  .stores({
+    dailyGoals: 'id, order',
+    dailyGoalCompletions: 'id, goalId, date',
+    events: 'id, date',
+    monthlyPriorities: 'id, month, order',
+    shoppingItems: 'id, order',
+    workTasks: 'id, order',
+    investmentCategories: 'id, order',
+    investments: 'id, categoryId',
+    investmentSnapshots: 'id, investmentId, month',
+    workoutDays: 'id, weekday, order',
+    exercises: 'id, workoutDayId, order',
+    diets: 'id',
+    dietMealItems: 'id, dietId, meal, order',
+    fixedBills: 'id, dueDay, order',
+    fixedBillPayments: 'id, fixedBillId, month',
+    profile: 'id',
+    settings: 'id',
+    trashItems: 'id, entityType, deletedAt',
+  })
+  .upgrade(async (tx) => {
+    await tx
+      .table('diets')
+      .toCollection()
+      .modify((d: { enabledMeals?: unknown }) => {
+        if (!Array.isArray(d.enabledMeals)) {
+          d.enabledMeals = ['cafeDaManha', 'almoco', 'janta']
+        }
       })
   })
 
