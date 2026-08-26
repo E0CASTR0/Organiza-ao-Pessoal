@@ -18,12 +18,13 @@ const tabs: Tab[] = [
 
 export function BottomTabBar() {
   return (
-    // sem position:fixed de propósito — como item normal do flex-col do AppShell (que
-    // já tem altura travada em h-dvh), essa barra fica sempre grudada na base real do
-    // viewport, sem o "pulo" que o fixed causava entre páginas de alturas diferentes.
+    // position:fixed direto no viewport (bottom:0), com um valor FIXO de 20px de respiro
+    // embaixo — não usa mais env(safe-area-inset-bottom) nem depende da altura calculada
+    // do container pai: no aparelho real, esses cálculos vinham dando um espaço vazio
+    // grande demais embaixo da barra, então em vez de tentar acertar o valor "certo"
+    // dinamicamente, travei num número fixo pequeno que gruda a barra na base de verdade.
     <nav
-      className="shrink-0 border-t border-[var(--border-subtle)] bg-[var(--bg-elevated-1)]"
-      style={{ paddingBottom: 'var(--safe-bottom)' }}
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border-subtle)] bg-[var(--bg-elevated-1)] pb-5"
     >
       <div className="mx-auto flex max-w-lg items-stretch justify-between px-2">
         {tabs.map(({ to, label, Icon }) => (
