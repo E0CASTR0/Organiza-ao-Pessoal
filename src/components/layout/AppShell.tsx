@@ -1,25 +1,21 @@
 import type { ReactNode } from 'react'
 import { BottomTabBar } from './BottomTabBar'
-import { useSwipeTabs } from './useSwipeTabs'
+import { SwipeView } from './SwipeView'
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const swipe = useSwipeTabs()
-
   return (
-    // h-dvh (altura "dinâmica" do viewport) em vez de min-h-full/100vh: no Safari do
-    // iPhone, a barra de endereço/navegação some e volta dependendo de quanto a página
-    // rola, e 100vh não acompanha isso — o que fazia a barra de baixo (fixed) "pular"
-    // ao trocar de página com altura de conteúdo diferente. Com o layout inteiro preso a
-    // h-dvh e a barra como último item de um flex-col (não mais position:fixed), ela
-    // sempre fica exatamente na base do viewport visível, sem recalcular nada.
-    <div className="flex h-dvh flex-col bg-[var(--bg-base)]">
+    // h-full (não h-dvh): no modo instalado (standalone) do iOS, h-dvh às vezes calcula
+    // uma altura menor que o viewport real, deixando uma faixa preta sobrando embaixo —
+    // como o html/body já estão travados em position:fixed;inset:0 (ver theme.css), só
+    // herdar 100% dessa altura já travada é mais confiável que recalcular via dvh.
+    <div className="flex h-full flex-col bg-[var(--bg-base)]">
       <main
         className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
         style={{ paddingTop: 'calc(var(--safe-top) + 1.25rem)' }}
-        onTouchStart={swipe.onTouchStart}
-        onTouchEnd={swipe.onTouchEnd}
       >
-        <div className="mx-auto max-w-lg px-4 pb-6">{children}</div>
+        <SwipeView>
+          <div className="mx-auto max-w-lg px-4 pb-6">{children}</div>
+        </SwipeView>
       </main>
       <BottomTabBar />
     </div>
