@@ -1,5 +1,5 @@
 import { db } from '../db'
-import type { Investment, InvestmentCategory, InvestmentSnapshot } from '../models'
+import type { Investment, InvestmentCategory, InvestmentReturn } from '../models'
 import { moveToTrash } from './trash.repo'
 
 // ---------- Categorias ----------
@@ -44,7 +44,6 @@ export interface InvestmentInput {
   name: string
   ticker: string | null
   amountInvested: number
-  monthlyReturnValue: number
   currentQuote: number | null
   notes: string
 }
@@ -59,7 +58,6 @@ export async function addInvestment(input: InvestmentInput): Promise<void> {
     createdAt: now,
   }
   await db.investments.add(investment)
-  await writeSnapshot(investment)
 }
 
 export async function updateInvestment(id: string, input: Partial<InvestmentInput>): Promise<void> {
@@ -68,8 +66,6 @@ export async function updateInvestment(id: string, input: Partial<InvestmentInpu
     patch.quoteUpdatedAt = new Date().toISOString()
   }
   await db.investments.update(id, patch)
-  const updated = await db.investments.get(id)
-  if (updated) await writeSnapshot(updated)
 }
 
 export async function removeInvestment(id: string): Promise<void> {
@@ -77,45 +73,59 @@ export async function removeInvestment(id: string): Promise<void> {
   if (!investment) return
   await moveToTrash('investments', id, investment.name, investment)
   await db.investments.delete(id)
-  await db.investmentSnapshots.where('investmentId').equals(id).delete()
+  await db.investmentReturns.where('investmentId').equals(id).delete()
 }
 
-// ---------- Histórico mensal (snapshots) ----------
+// ---------- Retornos (lançamentos que se acumulam, não sobrescrevem) ----------
+// Cada "adicionar retorno" grava uma linha nova. O retorno "do mês" é a soma das linhas
+// com month = mês atual — reinicia sozinho todo dia 1 (o mês novo simplesmente ainda não
+// tem lançamentos), sem precisar apagar nada. O retorno "total" soma tudo, pra sempre.
 
 function currentMonth(): string {
   return new Date().toISOString().slice(0, 7)
 }
 
-/** Grava (ou atualiza) o snapshot do mês atual pra esse investimento — é como o
- * histórico de lucro fica confiável mesmo editando o valor várias vezes no mesmo mês. */
-async function writeSnapshot(investment: Investment): Promise<void> {
-  const month = currentMonth()
-  const existing = await db.investmentSnapshots.where({ investmentId: investment.id, month }).first()
-  if (existing) {
-    await db.investmentSnapshots.update(existing.id, {
-      amountInvested: investment.amountInvested,
-      returnValue: investment.monthlyReturnValue,
-      quote: investment.currentQuote,
-    })
-  } else {
-    const snapshot: InvestmentSnapshot = {
-      id: crypto.randomUUID(),
-      investmentId: investment.id,
-      month,
-      amountInvested: investment.amountInvested,
-      returnValue: investment.monthlyReturnValue,
-      quote: investment.currentQuote,
-      createdAt: new Date().toISOString(),
-    }
-    await db.investmentSnapshots.add(snapshot)
+export function listReturnsByInvestment(investmentId: string) {
+  return db.investmentReturns.where('investmentId').equals(investmentId).reverse().sortBy('createdAt')
+}
+
+export function listReturnsByInvestmentAndMonth(investmentId: string, month: string) {
+  return db.investmentReturns.where({ investmentId, month }).toArray()
+}
+
+/** Todos os lançamentos de um mês, de todos os investimentos — usado pra somar o total
+ * do mês e o retorno por investimento numa passada só, em vez de uma consulta por linha. */
+export function listReturnsByMonth(month: string) {
+  return db.investmentReturns.where('month').equals(month).toArray()
+}
+
+export async function addInvestmentReturn(investmentId: string, value: number): Promise<void> {
+  const entry: InvestmentReturn = {
+    id: crypto.randomUUID(),
+    investmentId,
+    month: currentMonth(),
+    value,
+    createdAt: new Date().toISOString(),
   }
+  await db.investmentReturns.add(entry)
 }
 
-export function listSnapshotsByInvestment(investmentId: string) {
-  return db.investmentSnapshots.where('investmentId').equals(investmentId).sortBy('month')
+export async function removeInvestmentReturn(id: string): Promise<void> {
+  const entry = await db.investmentReturns.get(id)
+  if (!entry) return
+  await moveToTrash('investmentReturns', id, `Retorno de ${entry.month}`, entry)
+  await db.investmentReturns.delete(id)
 }
 
-export async function totalProfitAllTime(): Promise<number> {
-  const all = await db.investmentSnapshots.toArray()
-  return all.reduce((sum, s) => sum + s.returnValue, 0)
+/** Soma de todos os retornos de todos os investimentos no mês atual — reinicia sozinho a
+ * cada mês (é só a query filtrar por um "month" que ainda não tem lançamentos). */
+export async function totalReturnThisMonth(): Promise<number> {
+  const all = await db.investmentReturns.where('month').equals(currentMonth()).toArray()
+  return all.reduce((sum, r) => sum + r.value, 0)
+}
+
+/** Soma de todos os retornos, de todos os meses, pra sempre — cresce sem nunca resetar. */
+export async function totalReturnAllTime(): Promise<number> {
+  const all = await db.investmentReturns.toArray()
+  return all.reduce((sum, r) => sum + r.value, 0)
 }

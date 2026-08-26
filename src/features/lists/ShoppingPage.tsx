@@ -15,6 +15,8 @@ export function ShoppingPage() {
   const [editing, setEditing] = useState<ShoppingItem | null>(null)
   const items = useLiveQuery(() => listShoppingItems(), []) ?? []
 
+  const total = items.reduce((sum, item) => sum + (item.price ?? 0), 0)
+
   const openNew = () => {
     setEditing(null)
     setModalOpen(true)
@@ -27,6 +29,13 @@ export function ShoppingPage() {
 
   return (
     <div className="flex flex-col gap-4">
+      {items.length > 0 && (
+        <Card className="flex items-center justify-between p-4">
+          <p className="text-sm text-[var(--text-secondary)]">Total da lista</p>
+          <p className="font-[var(--font-heading)] text-xl text-[var(--text-primary)]">{formatCurrency(total)}</p>
+        </Card>
+      )}
+
       <Button onClick={openNew} className="self-end">
         <PlusIcon width={16} height={16} />
         Adicionar item

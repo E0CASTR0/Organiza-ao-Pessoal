@@ -3,6 +3,7 @@ import { Modal } from '@/components/ui/Modal'
 import { TextField, TextArea } from '@/components/ui/TextField'
 import { Button } from '@/components/ui/Button'
 import { addInvestment, updateInvestment, removeInvestment } from '@/db/repositories/investments.repo'
+import { InvestmentReturnLog } from './InvestmentReturnLog'
 import type { Investment, InvestmentCategory } from '@/db/models'
 
 interface InvestmentFormModalProps {
@@ -18,7 +19,6 @@ export function InvestmentFormModal({ open, onClose, categories, defaultCategory
   const [name, setName] = useState('')
   const [ticker, setTicker] = useState('')
   const [amountInvested, setAmountInvested] = useState('')
-  const [monthlyReturnValue, setMonthlyReturnValue] = useState('')
   const [currentQuote, setCurrentQuote] = useState('')
   const [notes, setNotes] = useState('')
 
@@ -28,7 +28,6 @@ export function InvestmentFormModal({ open, onClose, categories, defaultCategory
     setName(editing?.name ?? '')
     setTicker(editing?.ticker ?? '')
     setAmountInvested(editing ? String(editing.amountInvested) : '')
-    setMonthlyReturnValue(editing ? String(editing.monthlyReturnValue) : '')
     setCurrentQuote(editing?.currentQuote != null ? String(editing.currentQuote) : '')
     setNotes(editing?.notes ?? '')
   }, [open, editing, defaultCategoryId, categories])
@@ -40,7 +39,6 @@ export function InvestmentFormModal({ open, onClose, categories, defaultCategory
       name: name.trim(),
       ticker: ticker.trim() || null,
       amountInvested: Number(amountInvested) || 0,
-      monthlyReturnValue: Number(monthlyReturnValue) || 0,
       currentQuote: currentQuote.trim() ? Number(currentQuote) : null,
       notes,
     }
@@ -76,12 +74,12 @@ export function InvestmentFormModal({ open, onClose, categories, defaultCategory
         </label>
         <TextField label="Nome / empresa" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Tesouro Selic, PETR4..." autoFocus />
         <TextField label="Ticker (opcional)" value={ticker} onChange={(e) => setTicker(e.target.value)} placeholder="Ex: PETR4" />
-        <div className="flex gap-3">
-          <TextField label="Valor investido" type="number" inputMode="decimal" step="0.01" value={amountInvested} onChange={(e) => setAmountInvested(e.target.value)} className="flex-1" />
-          <TextField label="Retorno do mês" type="number" inputMode="decimal" step="0.01" value={monthlyReturnValue} onChange={(e) => setMonthlyReturnValue(e.target.value)} className="flex-1" />
-        </div>
+        <TextField label="Valor investido" type="number" inputMode="decimal" step="0.01" value={amountInvested} onChange={(e) => setAmountInvested(e.target.value)} />
         <TextField label="Cotação atual (opcional)" type="number" inputMode="decimal" step="0.01" value={currentQuote} onChange={(e) => setCurrentQuote(e.target.value)} />
         <TextArea label="Notas" value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} />
+
+        {editing && <InvestmentReturnLog investmentId={editing.id} />}
+
         <div className="mt-1 flex items-center justify-between gap-2.5">
           {editing ? (
             <Button variant="ghost" onClick={() => void handleDelete()}>

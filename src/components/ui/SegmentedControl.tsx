@@ -12,7 +12,9 @@ interface SegmentedControlProps {
 /** Sub-navegação em pílulas usada dentro dos hubs (ex: Listas -> Prioridades | Compras | Trabalho). */
 export function SegmentedControl({ segments, value, onChange }: SegmentedControlProps) {
   return (
-    <div className="flex gap-1 overflow-x-auto rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--bg-elevated-1)] p-1">
+    // data-hscroll: sinaliza pro gesto de arrastar-entre-abas (AppShell) ignorar arrastos
+    // que começam aqui dentro, já que esse elemento tem sua própria rolagem horizontal
+    <div data-hscroll className="flex gap-1 overflow-x-auto rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--bg-elevated-1)] p-1">
       {segments.map((segment) => (
         <button
           key={segment.value}

@@ -6,7 +6,8 @@ import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { PlusIcon, TrashIcon, WalletIcon } from '@/components/ui/icons'
-import { listCategories, listInvestments, removeCategory } from '@/db/repositories/investments.repo'
+import { listCategories, listInvestments, listReturnsByMonth, totalReturnAllTime, removeCategory } from '@/db/repositories/investments.repo'
+import { currentMonthKey } from '@/utils/date'
 import { formatCurrency } from '@/utils/currency'
 import { InvestmentFormModal } from './InvestmentFormModal'
 import { CategoryFormModal } from './CategoryFormModal'
@@ -18,11 +19,15 @@ export function InvestmentsPage() {
   const [editing, setEditing] = useState<Investment | null>(null)
   const [defaultCategoryId, setDefaultCategoryId] = useState<string | null>(null)
 
+  const month = currentMonthKey()
   const categories = useLiveQuery(() => listCategories(), []) ?? []
   const investments = useLiveQuery(() => listInvestments(), []) ?? []
+  const monthReturns = useLiveQuery(() => listReturnsByMonth(month), [month]) ?? []
+  const allTimeReturn = useLiveQuery(() => totalReturnAllTime(), [monthReturns]) ?? 0
 
   const totalInvested = investments.reduce((sum, inv) => sum + inv.amountInvested, 0)
-  const totalReturnThisMonth = investments.reduce((sum, inv) => sum + inv.monthlyReturnValue, 0)
+  const totalReturnThisMonth = monthReturns.reduce((sum, r) => sum + r.value, 0)
+  const returnThisMonthFor = (investmentId: string) => monthReturns.filter((r) => r.investmentId === investmentId).reduce((sum, r) => sum + r.value, 0)
 
   const openNew = (categoryId: string) => {
     setEditing(null)
@@ -67,6 +72,10 @@ export function InvestmentsPage() {
           <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">Retorno do mês</p>
           <p className="mt-1 font-[var(--font-heading)] text-xl text-[var(--text-primary)]">{formatCurrency(totalReturnThisMonth)}</p>
         </Card>
+        <Card className="col-span-2 p-4">
+          <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">Retorno total (todos os meses)</p>
+          <p className="mt-1 font-[var(--font-heading)] text-xl text-[var(--success)]">{formatCurrency(allTimeReturn)}</p>
+        </Card>
       </div>
 
       {categories.length === 0 ? (
@@ -93,24 +102,29 @@ export function InvestmentsPage() {
                 <p className="text-sm text-[var(--text-tertiary)]">Nenhum investimento nessa categoria.</p>
               ) : (
                 <div className="flex flex-col gap-2.5">
-                  {items.map((investment) => (
-                    <Card key={investment.id} className="cursor-pointer p-3.5" onClick={() => openEdit(investment)}>
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="truncate font-medium text-[var(--text-primary)]">
-                            {investment.name}
-                            {investment.ticker && <span className="ml-1.5 text-xs text-[var(--text-tertiary)]">{investment.ticker}</span>}
-                          </p>
-                          <p className="mt-0.5 text-sm text-[var(--text-secondary)]">Investido: {formatCurrency(investment.amountInvested)}</p>
-                          {investment.currentQuote != null && <p className="text-xs text-[var(--text-tertiary)]">Cotação: {formatCurrency(investment.currentQuote)}</p>}
+                  {items.map((investment) => {
+                    const returnThisMonth = returnThisMonthFor(investment.id)
+                    return (
+                      <Card key={investment.id} className="cursor-pointer p-3.5" onClick={() => openEdit(investment)}>
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="truncate font-medium text-[var(--text-primary)]">
+                              {investment.name}
+                              {investment.ticker && <span className="ml-1.5 text-xs text-[var(--text-tertiary)]">{investment.ticker}</span>}
+                            </p>
+                            <p className="mt-0.5 text-sm text-[var(--text-secondary)]">Investido: {formatCurrency(investment.amountInvested)}</p>
+                            {investment.currentQuote != null && <p className="text-xs text-[var(--text-tertiary)]">Cotação: {formatCurrency(investment.currentQuote)}</p>}
+                          </div>
+                          {returnThisMonth !== 0 && (
+                            <p className={`shrink-0 text-sm font-medium ${returnThisMonth >= 0 ? 'text-[var(--success)]' : 'text-[var(--danger)]'}`}>
+                              {returnThisMonth >= 0 ? '+' : ''}
+                              {formatCurrency(returnThisMonth)}
+                            </p>
+                          )}
                         </div>
-                        <p className={`shrink-0 text-sm font-medium ${investment.monthlyReturnValue >= 0 ? 'text-[var(--success)]' : 'text-[var(--danger)]'}`}>
-                          {investment.monthlyReturnValue >= 0 ? '+' : ''}
-                          {formatCurrency(investment.monthlyReturnValue)}
-                        </p>
-                      </div>
-                    </Card>
-                  ))}
+                      </Card>
+                    )
+                  })}
                 </div>
               )}
             </section>

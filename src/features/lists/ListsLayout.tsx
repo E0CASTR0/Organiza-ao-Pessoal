@@ -7,6 +7,7 @@ const segments = [
   { value: 'prioridades', label: 'Prioridades' },
   { value: 'compras', label: 'Compras' },
   { value: 'trabalho', label: 'Trabalho' },
+  { value: 'notas', label: 'Notas' },
 ]
 
 export function ListsLayout() {

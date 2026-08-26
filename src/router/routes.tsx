@@ -5,6 +5,7 @@ import { ListsLayout } from '@/features/lists/ListsLayout'
 import { PrioritiesPage } from '@/features/lists/PrioritiesPage'
 import { ShoppingPage } from '@/features/lists/ShoppingPage'
 import { WorkPage } from '@/features/lists/WorkPage'
+import { NotesPage } from '@/features/lists/NotesPage'
 import { RoutineLayout } from '@/features/routine/RoutineLayout'
 import { WorkoutPage } from '@/features/routine/WorkoutPage'
 import { DietPage } from '@/features/routine/DietPage'
@@ -27,6 +28,7 @@ export function AppRoutes() {
         <Route path="prioridades" element={<PrioritiesPage />} />
         <Route path="compras" element={<ShoppingPage />} />
         <Route path="trabalho" element={<WorkPage />} />
+        <Route path="notas" element={<NotesPage />} />
       </Route>
 
       <Route path="/rotina" element={<RoutineLayout />}>

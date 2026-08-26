@@ -93,7 +93,18 @@ body {
   color: var(--text-primary);
   font-family: var(--font-body);
   -webkit-tap-highlight-color: transparent;
-  overscroll-behavior-y: none;
+}
+
+/* Trava a página inteira (sem scroll, sem "elástico" do iOS) — só o miolo do app
+   (a <main> do AppShell, que tem seu próprio overflow-y:auto) rola de verdade. Sem isso,
+   o Safari deixa a PÁGINA TODA balançar/voltar quando arrasta além do limite, o que fazia
+   até a barra de abas de baixo (fora da área de rolagem) parecer "subir e descer" junto. */
+html,
+body {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 ::selection {

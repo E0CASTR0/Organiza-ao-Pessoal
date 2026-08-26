@@ -8,7 +8,8 @@ import type {
   WorkTask,
   InvestmentCategory,
   Investment,
-  InvestmentSnapshot,
+  InvestmentReturn,
+  Note,
   WorkoutDay,
   Exercise,
   Diet,
@@ -29,7 +30,8 @@ export const db = new Dexie('organizacao-pessoal') as Dexie & {
   workTasks: EntityTable<WorkTask, 'id'>
   investmentCategories: EntityTable<InvestmentCategory, 'id'>
   investments: EntityTable<Investment, 'id'>
-  investmentSnapshots: EntityTable<InvestmentSnapshot, 'id'>
+  investmentReturns: EntityTable<InvestmentReturn, 'id'>
+  notes: EntityTable<Note, 'id'>
   workoutDays: EntityTable<WorkoutDay, 'id'>
   exercises: EntityTable<Exercise, 'id'>
   diets: EntityTable<Diet, 'id'>
@@ -144,6 +146,84 @@ db.version(3)
         if (!Array.isArray(d.enabledMeals)) {
           d.enabledMeals = ['cafeDaManha', 'almoco', 'janta']
         }
+      })
+  })
+
+// v4: três mudanças —
+// 1) Nova seção de Notas (tabela `notes`, simples: título + texto).
+// 2) Retorno mensal dos investimentos vira um LOG que acumula (tabela `investmentReturns`,
+//    substitui `investmentSnapshots`) em vez de um campo único que se sobrescreve: cada
+//    "adicionar retorno" grava uma linha nova, o "retorno do mês" é a soma das linhas do
+//    mês atual (reinicia sozinho todo dia 1, sem apagar nada — o mês novo só ainda não tem
+//    linhas), e o "retorno total" é a soma de tudo, pra sempre.
+// 3) Campo `monthlyReturnValue` sai do investimento (não faz mais sentido como valor único).
+// O upgrade migra os dados antigos: cada investmentSnapshot vira um investmentReturn
+// (mesmo mês, mesmo valor), e se o investimento tinha um monthlyReturnValue diferente de
+// zero sem snapshot correspondente, isso também vira um lançamento no mês atual — nada se
+// perde.
+db.version(4)
+  .stores({
+    dailyGoals: 'id, order',
+    dailyGoalCompletions: 'id, goalId, date',
+    events: 'id, date',
+    monthlyPriorities: 'id, month, order',
+    shoppingItems: 'id, order',
+    workTasks: 'id, order',
+    notes: 'id, updatedAt',
+    investmentCategories: 'id, order',
+    investments: 'id, categoryId',
+    investmentReturns: 'id, investmentId, month',
+    workoutDays: 'id, weekday, order',
+    exercises: 'id, workoutDayId, order',
+    diets: 'id',
+    dietMealItems: 'id, dietId, meal, order',
+    fixedBills: 'id, dueDay, order',
+    fixedBillPayments: 'id, fixedBillId, month',
+    profile: 'id',
+    settings: 'id',
+    trashItems: 'id, entityType, deletedAt',
+    // tabela antiga removida do schema — dexie preserva os dados que ainda existirem nela,
+    // só paramos de indexar/expor via db.investmentSnapshots (a migração abaixo já copia
+    // tudo relevante pra investmentReturns antes disso)
+    investmentSnapshots: null,
+  })
+  .upgrade(async (tx) => {
+    interface OldSnapshot {
+      id: string
+      investmentId: string
+      month: string
+      returnValue: number
+      createdAt: string
+    }
+    interface OldInvestment {
+      id: string
+      monthlyReturnValue?: number
+    }
+
+    const now = new Date().toISOString()
+    const currentMonth = now.slice(0, 7)
+
+    const oldSnapshots: OldSnapshot[] = await tx.table('investmentSnapshots').toArray()
+    const returnsFromSnapshots = oldSnapshots
+      .filter((s) => s.returnValue)
+      .map((s) => ({ id: crypto.randomUUID(), investmentId: s.investmentId, month: s.month, value: s.returnValue, createdAt: s.createdAt }))
+
+    const migratedInvestmentIds = new Set(returnsFromSnapshots.map((r) => r.investmentId))
+    const oldInvestments: OldInvestment[] = await tx.table('investments').toArray()
+    const returnsFromInvestmentField = oldInvestments
+      .filter((inv) => inv.monthlyReturnValue && !migratedInvestmentIds.has(inv.id))
+      .map((inv) => ({ id: crypto.randomUUID(), investmentId: inv.id, month: currentMonth, value: inv.monthlyReturnValue as number, createdAt: now }))
+
+    const allReturns = [...returnsFromSnapshots, ...returnsFromInvestmentField]
+    if (allReturns.length > 0) {
+      await tx.table('investmentReturns').bulkAdd(allReturns)
+    }
+
+    await tx
+      .table('investments')
+      .toCollection()
+      .modify((inv: OldInvestment & Record<string, unknown>) => {
+        delete inv.monthlyReturnValue
       })
   })
 

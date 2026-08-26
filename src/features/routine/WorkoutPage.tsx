@@ -45,7 +45,7 @@ export function WorkoutPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex gap-1.5 overflow-x-auto pb-1">
+      <div data-hscroll className="flex gap-1.5 overflow-x-auto pb-1">
         {WEEKDAY_SHORT.map((label, weekday) => (
           <button
             key={weekday}

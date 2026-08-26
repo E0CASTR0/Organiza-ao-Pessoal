@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { fileToResizedBase64 } from '@/utils/image'
+import { ImageCropModal } from './ImageCropModal'
 
 interface ImagePickerProps {
   value: string | null
@@ -10,20 +10,7 @@ interface ImagePickerProps {
 
 export function ImagePicker({ value, onChange, shape = 'square', size = 88 }: ImagePickerProps) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const [loading, setLoading] = useState(false)
-
-  const handleFile = async (file: File | undefined) => {
-    if (!file) return
-    setLoading(true)
-    try {
-      const base64 = await fileToResizedBase64(file)
-      onChange(base64)
-    } catch {
-      // silenciosamente ignora — o usuário pode tentar de novo
-    } finally {
-      setLoading(false)
-    }
-  }
+  const [pendingFile, setPendingFile] = useState<File | null>(null)
 
   return (
     <div className="flex items-center gap-3">
@@ -35,12 +22,7 @@ export function ImagePicker({ value, onChange, shape = 'square', size = 88 }: Im
           shape === 'circle' ? 'rounded-full' : 'rounded-[var(--radius-md)]'
         }`}
       >
-        {value ? (
-          <img src={value} alt="" className="h-full w-full object-cover" />
-        ) : (
-          <span className="text-2xl">＋</span>
-        )}
-        {loading && <span className="absolute inset-0 flex items-center justify-center bg-[var(--overlay)] text-xs text-[var(--text-primary)]">...</span>}
+        {value ? <img src={value} alt="" className="h-full w-full object-cover" /> : <span className="text-2xl">＋</span>}
       </button>
       <input
         ref={inputRef}
@@ -48,7 +30,8 @@ export function ImagePicker({ value, onChange, shape = 'square', size = 88 }: Im
         accept="image/*"
         className="hidden"
         onChange={(e) => {
-          void handleFile(e.target.files?.[0])
+          const file = e.target.files?.[0]
+          if (file) setPendingFile(file)
           e.target.value = ''
         }}
       />
@@ -62,6 +45,16 @@ export function ImagePicker({ value, onChange, shape = 'square', size = 88 }: Im
           </button>
         )}
       </div>
+
+      <ImageCropModal
+        file={pendingFile}
+        shape={shape === 'circle' ? 'circle' : 'square'}
+        onCancel={() => setPendingFile(null)}
+        onSave={(base64) => {
+          onChange(base64)
+          setPendingFile(null)
+        }}
+      />
     </div>
   )
 }

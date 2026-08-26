@@ -44,10 +44,13 @@ export async function removeFixedBill(id: string): Promise<void> {
   await db.fixedBillPayments.where('fixedBillId').equals(id).delete()
 }
 
-// ---------- Pagamentos por mês ----------
-
-export function listPaymentsByMonth(month: string) {
-  return db.fixedBillPayments.where('month').equals(month).toArray()
+// ---------- Pagamentos ----------
+// Cada conta tem seu próprio "ciclo" (vencimento até o próximo vencimento — ver
+// utils/date.ts#currentBillCycleKey), não um mês de calendário compartilhado, então
+// carregamos todos os pagamentos e cada tela decide qual "month" (chave de ciclo) checar
+// pra cada conta individualmente.
+export function listAllPayments() {
+  return db.fixedBillPayments.toArray()
 }
 
 export async function togglePaid(fixedBillId: string, month: string): Promise<void> {

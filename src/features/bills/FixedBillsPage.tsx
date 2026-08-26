@@ -7,24 +7,26 @@ import { Checkbox } from '@/components/ui/Checkbox'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { PlusIcon, ReceiptIcon } from '@/components/ui/icons'
-import { listFixedBills, listPaymentsByMonth, togglePaid } from '@/db/repositories/fixedBills.repo'
-import { currentMonthKey, formatMonthLabel } from '@/utils/date'
+import { listFixedBills, listAllPayments, togglePaid } from '@/db/repositories/fixedBills.repo'
+import { currentBillCycleKey, currentMonthKey, formatMonthLabel } from '@/utils/date'
 import { formatCurrency } from '@/utils/currency'
 import { FixedBillFormModal } from './FixedBillFormModal'
 import type { FixedBill } from '@/db/models'
 
 export function FixedBillsPage() {
-  const month = currentMonthKey()
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState<FixedBill | null>(null)
 
   const bills = useLiveQuery(() => listFixedBills(), []) ?? []
-  const payments = useLiveQuery(() => listPaymentsByMonth(month), [month]) ?? []
+  const payments = useLiveQuery(() => listAllPayments(), []) ?? []
 
   const activeBills = bills.filter((b) => b.active)
-  const isPaid = (billId: string) => payments.some((p) => p.fixedBillId === billId && p.paidAt)
+  // cada conta tem seu próprio ciclo (vence dia X, fica "pago" até o próximo dia X) —
+  // não reseta todo dia 1, só quando o vencimento daquela conta específica chega de novo
+  const cycleKeyFor = (bill: FixedBill) => currentBillCycleKey(bill.dueDay)
+  const isPaid = (bill: FixedBill) => payments.some((p) => p.fixedBillId === bill.id && p.month === cycleKeyFor(bill) && p.paidAt)
   const totalMonth = activeBills.reduce((sum, b) => sum + b.value, 0)
-  const totalPaid = activeBills.filter((b) => isPaid(b.id)).reduce((sum, b) => sum + b.value, 0)
+  const totalPaid = activeBills.filter((b) => isPaid(b)).reduce((sum, b) => sum + b.value, 0)
 
   const openNew = () => {
     setEditing(null)
@@ -41,7 +43,7 @@ export function FixedBillsPage() {
       <BackHeader title="Mais" to="/mais" />
       <PageHeader
         title="Contas Fixas"
-        subtitle={formatMonthLabel(month)}
+        subtitle={formatMonthLabel(currentMonthKey())}
         icon={<ReceiptIcon width={20} height={20} />}
         action={
           <Button size="sm" onClick={openNew}>
@@ -71,7 +73,7 @@ export function FixedBillsPage() {
             .sort((a, b) => a.dueDay - b.dueDay)
             .map((bill) => (
               <Card key={bill.id} className="flex items-center justify-between gap-3 p-3.5">
-                <Checkbox checked={isPaid(bill.id)} onChange={() => void togglePaid(bill.id, month)} />
+                <Checkbox checked={isPaid(bill)} onChange={() => void togglePaid(bill.id, cycleKeyFor(bill))} />
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-elevated-3)] text-[var(--accent)]">
                   {bill.imageBase64 ? <img src={bill.imageBase64} alt="" className="h-full w-full object-cover" /> : <ReceiptIcon width={18} height={18} />}
                 </span>

@@ -24,12 +24,13 @@ export function SearchPage() {
     const term = query.trim().toLowerCase()
     if (!term) return []
 
-    const [priorities, shopping, tasks, bills, diets] = await Promise.all([
+    const [priorities, shopping, tasks, bills, diets, notes] = await Promise.all([
       db.monthlyPriorities.toArray(),
       db.shoppingItems.toArray(),
       db.workTasks.toArray(),
       db.fixedBills.toArray(),
       db.diets.toArray(),
+      db.notes.toArray(),
     ])
 
     const found: SearchResult[] = []
@@ -38,6 +39,7 @@ export function SearchPage() {
     for (const t of tasks) if (t.title.toLowerCase().includes(term)) found.push({ id: t.id, title: t.title, section: 'Trabalho', to: '/listas/trabalho' })
     for (const b of bills) if (b.name.toLowerCase().includes(term)) found.push({ id: b.id, title: b.name, section: 'Contas Fixas', to: '/mais/contas-fixas' })
     for (const d of diets) if (d.title.toLowerCase().includes(term)) found.push({ id: d.id, title: d.title, section: 'Dieta', to: '/rotina/dieta' })
+    for (const n of notes) if (n.title.toLowerCase().includes(term) || n.content.toLowerCase().includes(term)) found.push({ id: n.id, title: n.title, section: 'Nota', to: '/listas/notas' })
     return found
   }, [query]) ?? []
 
@@ -45,7 +47,7 @@ export function SearchPage() {
     <div className="flex flex-col gap-5">
       <BackHeader title="Mais" to="/mais" />
       <PageHeader title="Buscar" icon={<SearchIcon width={20} height={20} />} />
-      <TextField value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar em compras, prioridades, tarefas, contas, dietas..." autoFocus />
+      <TextField value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar em compras, prioridades, tarefas, contas, dietas, notas..." autoFocus />
 
       {query.trim() && results.length === 0 && <EmptyState title="Nada encontrado" description="Tente outro termo de busca." />}
 

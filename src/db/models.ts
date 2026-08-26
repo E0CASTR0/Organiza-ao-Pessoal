@@ -61,6 +61,15 @@ export interface WorkTask {
   createdAt: string
 }
 
+/** Anotação livre — tipo o app Notas do iPhone: só título + texto, sem mais nada. */
+export interface Note {
+  id: string
+  title: string
+  content: string
+  createdAt: string
+  updatedAt: string
+}
+
 export type PriceSource = 'manual' | 'api'
 
 export interface InvestmentCategory {
@@ -75,7 +84,6 @@ export interface Investment {
   name: string
   ticker: string | null
   amountInvested: number
-  monthlyReturnValue: number
   currentQuote: number | null
   quoteUpdatedAt: string | null
   priceSource: PriceSource
@@ -83,13 +91,16 @@ export interface Investment {
   createdAt: string
 }
 
-export interface InvestmentSnapshot {
+/** Um lançamento de retorno — cada "adicionar" cria uma linha nova (não sobrescreve),
+ * então dá pra lançar quantas vezes quiser ao longo do mês e elas se somam. O retorno "do
+ * mês" é a soma dos lançamentos com month = mês atual (reinicia sozinho todo dia 1, sem
+ * precisar apagar nada — o mês novo simplesmente ainda não tem lançamentos). O retorno
+ * "total" é a soma de todos os lançamentos, de todos os meses, pra sempre. */
+export interface InvestmentReturn {
   id: string
   investmentId: string
   month: string // 'AAAA-MM'
-  amountInvested: number
-  returnValue: number
-  quote: number | null
+  value: number
   createdAt: string
 }
 
