@@ -31,6 +31,22 @@
         }
       })();
     </script>
+
+    <!-- Altura real da tela via JS, não via unidade CSS (100vh/100dvh) — no modo
+         "Adicionar à Tela de Início" do iOS, o dvh às vezes calcula uma altura menor que
+         a tela de verdade, sobrando uma faixa preta embaixo da barra de navegação.
+         window.innerHeight é confiável mesmo nesse modo. Atualiza em resize/orientação
+         (ex: girar o aparelho) pra nunca ficar desatualizado. -->
+    <script>
+      (function () {
+        function setAppHeight() {
+          document.documentElement.style.setProperty('--app-height', window.innerHeight + 'px');
+        }
+        setAppHeight();
+        window.addEventListener('resize', setAppHeight);
+        window.addEventListener('orientationchange', setAppHeight);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

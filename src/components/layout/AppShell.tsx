@@ -4,11 +4,11 @@ import { SwipeView } from './SwipeView'
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
-    // h-full (não h-dvh): no modo instalado (standalone) do iOS, h-dvh às vezes calcula
-    // uma altura menor que o viewport real, deixando uma faixa preta sobrando embaixo —
-    // como o html/body já estão travados em position:fixed;inset:0 (ver theme.css), só
-    // herdar 100% dessa altura já travada é mais confiável que recalcular via dvh.
-    <div className="flex h-full flex-col bg-[var(--bg-base)]">
+    // --app-height vem de window.innerHeight, calculado em JS (ver index.html) — nem
+    // h-dvh nem h-full (100%) se mostraram confiáveis no modo instalado do iOS (sobrava
+    // uma faixa preta embaixo da barra de navegação); window.innerHeight é a fonte da
+    // verdade que o próprio Safari usa pro tamanho real da tela nesse modo.
+    <div className="flex h-[var(--app-height)] flex-col bg-[var(--bg-base)]">
       <main
         className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
         style={{ paddingTop: 'calc(var(--safe-top) + 1.25rem)' }}

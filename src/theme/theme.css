@@ -17,6 +17,9 @@
   --radius-lg: 20px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
+  /* fallback caso o script em index.html ainda não tenha rodado (frações de segundo) —
+     o script sempre sobrescreve isso com window.innerHeight logo no <head> */
+  --app-height: 100vh;
 }
 
 /* Tema escuro — padrão do app */
