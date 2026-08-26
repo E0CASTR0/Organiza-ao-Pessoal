@@ -15,7 +15,11 @@
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 20px;
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  /* min(...,34px): trava num teto de 34px (a barrinha de indicador do iPhone) mesmo se
+     o env() vier reportando um valor maior — no app instalado (sem barra do Safari
+     embaixo), o espaço reservado tem que ser só o suficiente pra não tampar o indicador,
+     nada além disso. Sem esse teto, sobrava um vão vazio embaixo da barra de navegação. */
+  --safe-bottom: min(env(safe-area-inset-bottom, 0px), 34px);
   --safe-top: env(safe-area-inset-top, 0px);
   /* fallback caso o script em index.html ainda não tenha rodado (frações de segundo) —
      o script sempre sobrescreve isso com window.innerHeight logo no <head> */
