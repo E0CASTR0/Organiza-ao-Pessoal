@@ -85,8 +85,11 @@
   --overlay: rgba(20, 18, 14, 0.45);
 }
 
-html,
-body,
+/* #root só precisa preencher o body (que já é fixed+inset:0 logo abaixo) — html/body
+   deliberadamente NÃO levam height:100% aqui: ter height:100% junto com position:fixed
+   e top/bottom (do inset:0) ao mesmo tempo sobre-restringe a caixa, e o AppShell já se
+   gruda direto no viewport sozinho (fixed+inset:0 também), então nada mais precisa
+   dessa altura herdada. */
 #root {
   height: 100%;
 }
