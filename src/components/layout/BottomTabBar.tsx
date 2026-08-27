@@ -23,11 +23,10 @@ export function BottomTabBar() {
     // do container pai: no aparelho real, esses cálculos vinham dando um espaço vazio
     // grande demais embaixo da barra, então em vez de tentar acertar o valor "certo"
     // dinamicamente, travei num número fixo pequeno que gruda a barra na base de verdade.
-    // borda verde limão de 4px = marca temporária de diagnóstico, só pra confirmar que
-    // essa versão nova carregou de verdade no aparelho (remover depois de confirmado)
-    <nav
-      className="fixed inset-x-0 bottom-0 z-40 border-t-4 border-lime-400 bg-[var(--bg-elevated-1)] pb-5"
-    >
+    // position:fixed direto no viewport (bottom:0) com respiro fixo de 20px — confirmado
+    // funcionando certinho no aparelho real (o bug anterior era só cache do Safari
+    // servindo uma versão desatualizada, não o CSS em si).
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border-subtle)] bg-[var(--bg-elevated-1)] pb-5">
       <div className="mx-auto flex max-w-lg items-stretch justify-between px-2">
         {tabs.map(({ to, label, Icon }) => (
           <NavLink
