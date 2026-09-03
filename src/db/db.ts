@@ -232,13 +232,61 @@ db.version(4)
  * vezes, duas chamadas concorrentes a essa função podem entrelaçar suas leituras/escritas — envolver
  * tudo numa transação faz a segunda chamada esperar a primeira terminar antes de checar o que já existe,
  * evitando categorias/dias de treino duplicados. */
+// Datas fixas (segunda/quarta/sexta e segunda) de 04/09/2026 até 01/01/2027, pedidas
+// pelo usuário — geradas uma vez e gravadas aqui pra não depender de recalcular "a
+// partir de hoje" toda vez que o app abre (o que mudaria a lista se ele só abrisse o
+// app dias depois desse pedido).
+const FUTEVOLEI_DATES = [
+  '2026-09-04', '2026-09-07', '2026-09-09', '2026-09-11', '2026-09-14', '2026-09-16', '2026-09-18',
+  '2026-09-21', '2026-09-23', '2026-09-25', '2026-09-28', '2026-09-30', '2026-10-02', '2026-10-05',
+  '2026-10-07', '2026-10-09', '2026-10-12', '2026-10-14', '2026-10-16', '2026-10-19', '2026-10-21',
+  '2026-10-23', '2026-10-26', '2026-10-28', '2026-10-30', '2026-11-02', '2026-11-04', '2026-11-06',
+  '2026-11-09', '2026-11-11', '2026-11-13', '2026-11-16', '2026-11-18', '2026-11-20', '2026-11-23',
+  '2026-11-25', '2026-11-27', '2026-11-30', '2026-12-02', '2026-12-04', '2026-12-07', '2026-12-09',
+  '2026-12-11', '2026-12-14', '2026-12-16', '2026-12-18', '2026-12-21', '2026-12-23', '2026-12-25',
+  '2026-12-28', '2026-12-30', '2027-01-01',
+]
+const BARBEARIA_DATES = [
+  '2026-09-07', '2026-09-14', '2026-09-21', '2026-09-28', '2026-10-05', '2026-10-12', '2026-10-19',
+  '2026-10-26', '2026-11-02', '2026-11-09', '2026-11-16', '2026-11-23', '2026-11-30', '2026-12-07',
+  '2026-12-14', '2026-12-21', '2026-12-28',
+]
+
 export async function ensureSeedData() {
   const now = new Date().toISOString()
 
-  await db.transaction('rw', [db.settings, db.profile, db.investmentCategories, db.workoutDays], async () => {
-    const settings = await db.settings.get('settings')
+  await db.transaction('rw', [db.settings, db.profile, db.investmentCategories, db.workoutDays, db.events], async () => {
+    let settings = await db.settings.get('settings')
     if (!settings) {
-      await db.settings.put({ id: 'settings', theme: 'dark', updatedAt: now })
+      settings = { id: 'settings', theme: 'dark', updatedAt: now }
+      await db.settings.put(settings)
+    }
+
+    // adiciona os compromissos fixos (treino de futevôlei + curso de barbearia) uma
+    // única vez — nunca apaga nem mexe em nenhum evento que já exista
+    if (!settings.recurringEventsSeeded) {
+      const newEvents = [
+        ...FUTEVOLEI_DATES.map((date) => ({
+          id: crypto.randomUUID(),
+          title: 'Treino de Futevôlei',
+          date,
+          time: '06:30',
+          notes: '',
+          createdAt: now,
+          updatedAt: now,
+        })),
+        ...BARBEARIA_DATES.map((date) => ({
+          id: crypto.randomUUID(),
+          title: 'Curso de Barbearia',
+          date,
+          time: '15:00',
+          notes: '',
+          createdAt: now,
+          updatedAt: now,
+        })),
+      ]
+      await db.events.bulkAdd(newEvents)
+      await db.settings.update('settings', { recurringEventsSeeded: true })
     }
 
     const profile = await db.profile.get('profile')

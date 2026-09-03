@@ -177,6 +177,7 @@ export type ThemeMode = 'dark' | 'light'
 export interface Settings {
   id: 'settings'
   theme: ThemeMode
+  recurringEventsSeeded?: boolean // marca que os compromissos fixos (treino/curso) já foram adicionados uma vez
   updatedAt: string
 }
 
