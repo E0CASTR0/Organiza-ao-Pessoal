@@ -7,7 +7,7 @@ import { SegmentedControl } from '@/components/ui/SegmentedControl'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ChevronLeftIcon, ChevronRightIcon, PlusIcon, CalendarIcon } from '@/components/ui/icons'
 import { listEventsByDate, listEventsBetween } from '@/db/repositories/events.repo'
-import { todayKey, toDateKey, addDays, startOfWeek, formatDateLong, formatDateShort, WEEKDAY_SHORT, toWeekdayIndex } from '@/utils/date'
+import { todayKey, toDateKey, addDays, startOfWeek, formatDateLong, formatDateShort, WEEKDAY_LABELS, WEEKDAY_SHORT, toWeekdayIndex } from '@/utils/date'
 import { EventFormModal } from './EventFormModal'
 import type { EventItem } from '@/db/models'
 
@@ -65,6 +65,7 @@ export function AgendaPage() {
               <ChevronLeftIcon width={20} height={20} />
             </button>
             <div className="text-center">
+              <p className="text-xs font-medium uppercase tracking-wide text-[var(--text-tertiary)]">{WEEKDAY_LABELS[toWeekdayIndex(anchor)]}</p>
               <p className="font-medium text-[var(--text-primary)]">{formatDateLong(dateKey)}</p>
               {dateKey !== todayKey() && (
                 <button onClick={() => setAnchor(new Date())} className="text-xs text-[var(--accent)]">
