@@ -7,8 +7,9 @@ import { Checkbox } from '@/components/ui/Checkbox'
 import { Button } from '@/components/ui/Button'
 import { TextField } from '@/components/ui/TextField'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { TrashIcon, CalendarIcon, ReceiptIcon, PlusIcon } from '@/components/ui/icons'
-import { listGoals, listCompletionsByDate, addGoal, toggleGoalForDate, removeGoal } from '@/db/repositories/dailyGoals.repo'
+import { TrashIcon, CalendarIcon, ReceiptIcon, PlusIcon, GripIcon } from '@/components/ui/icons'
+import { ReorderableList } from '@/components/ui/ReorderableList'
+import { listGoals, listCompletionsByDate, addGoal, toggleGoalForDate, removeGoal, reorderGoals } from '@/db/repositories/dailyGoals.repo'
 import { listEventsByDate } from '@/db/repositories/events.repo'
 import { listFixedBills } from '@/db/repositories/fixedBills.repo'
 import { getActiveDiet } from '@/db/repositories/diets.repo'
@@ -68,23 +69,39 @@ export function HomePage() {
         <Card className="p-4">
           <div className="flex flex-col gap-3">
             {goals.length === 0 && <p className="text-sm text-[var(--text-tertiary)]">Nenhuma meta adicionada ainda.</p>}
-            {goals.map((goal) => (
-              <div key={goal.id} className="flex items-center justify-between gap-2">
-                <Checkbox
-                  checked={isGoalDone(goal.id)}
-                  onChange={() => void toggleGoalForDate(goal.id, today)}
-                  label={goal.title}
-                />
-                <button
-                  type="button"
-                  onClick={() => void removeGoal(goal.id)}
-                  aria-label="Remover meta"
-                  className="shrink-0 text-[var(--text-tertiary)] hover:text-[var(--danger)]"
-                >
-                  <TrashIcon width={16} height={16} />
-                </button>
-              </div>
-            ))}
+            {goals.length > 0 && (
+              <ReorderableList
+                items={goals}
+                rowHeight={44}
+                onReorder={(ids) => void reorderGoals(ids)}
+                renderItem={(goal, dragHandle, dragging) => (
+                  <div className={`flex items-center justify-between gap-2 rounded-[var(--radius-sm)] ${dragging ? 'bg-[var(--bg-elevated-2)] shadow-[0_4px_12px_var(--shadow)]' : ''}`}>
+                    <Checkbox
+                      checked={isGoalDone(goal.id)}
+                      onChange={() => void toggleGoalForDate(goal.id, today)}
+                      label={goal.title}
+                    />
+                    <div className="flex shrink-0 items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => void removeGoal(goal.id)}
+                        aria-label="Remover meta"
+                        className="p-1 text-[var(--text-tertiary)] hover:text-[var(--danger)]"
+                      >
+                        <TrashIcon width={16} height={16} />
+                      </button>
+                      <span
+                        {...dragHandle}
+                        aria-label="Arrastar pra reordenar"
+                        className="touch-none p-1 text-[var(--text-tertiary)]"
+                      >
+                        <GripIcon width={18} height={18} />
+                      </span>
+                    </div>
+                  </div>
+                )}
+              />
+            )}
             <form
               className="mt-1 flex gap-2"
               onSubmit={(e) => {

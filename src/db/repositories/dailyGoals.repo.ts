@@ -44,6 +44,14 @@ export async function renameGoal(id: string, title: string): Promise<void> {
   await db.dailyGoals.update(id, { title })
 }
 
+/** Grava a nova ordem depois de arrastar — `orderedIds` é a lista completa de ids na
+ * sequência final desejada. */
+export async function reorderGoals(orderedIds: string[]): Promise<void> {
+  await db.transaction('rw', db.dailyGoals, async () => {
+    await Promise.all(orderedIds.map((id, index) => db.dailyGoals.update(id, { order: index })))
+  })
+}
+
 export async function removeGoal(id: string): Promise<void> {
   const goal = await db.dailyGoals.get(id)
   if (!goal) return
