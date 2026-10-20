@@ -1,4 +1,5 @@
 import Dexie, { type EntityTable } from 'dexie'
+import { addDays, toDateKey } from '../utils/date'
 import type {
   DailyGoal,
   DailyGoalCompletion,
@@ -232,10 +233,10 @@ db.version(4)
  * vezes, duas chamadas concorrentes a essa função podem entrelaçar suas leituras/escritas — envolver
  * tudo numa transação faz a segunda chamada esperar a primeira terminar antes de checar o que já existe,
  * evitando categorias/dias de treino duplicados. */
-// Datas fixas (segunda/quarta/sexta e segunda) de 04/09/2026 até 01/01/2027, pedidas
-// pelo usuário — geradas uma vez e gravadas aqui pra não depender de recalcular "a
-// partir de hoje" toda vez que o app abre (o que mudaria a lista se ele só abrisse o
-// app dias depois desse pedido).
+// Datas fixas pedidas pelo usuário (futevôlei: segunda/quarta/sexta; barbearia: terça) até
+// 01/01/2027 — geradas uma vez e gravadas aqui pra não depender de recalcular "a partir de
+// hoje" toda vez que o app abre (o que mudaria a lista se ele só abrisse o app dias depois
+// desse pedido).
 const FUTEVOLEI_DATES = [
   '2026-09-04', '2026-09-07', '2026-09-09', '2026-09-11', '2026-09-14', '2026-09-16', '2026-09-18',
   '2026-09-21', '2026-09-23', '2026-09-25', '2026-09-28', '2026-09-30', '2026-10-02', '2026-10-05',
@@ -246,16 +247,46 @@ const FUTEVOLEI_DATES = [
   '2026-12-11', '2026-12-14', '2026-12-16', '2026-12-18', '2026-12-21', '2026-12-23', '2026-12-25',
   '2026-12-28', '2026-12-30', '2027-01-01',
 ]
+// O curso de barbearia era toda segunda (15h) e passou a ser toda terça (mesmo horário) a
+// partir da semana de 19/10/2026. As segundas anteriores ficam como estão (histórico); as
+// terças abaixo só são usadas numa instalação nova — quem já tinha as segundas cadastradas
+// recebe a mudança por moveBarbeariaToTuesday.
+const BARBEARIA_TUESDAY_FROM = '2026-10-19'
 const BARBEARIA_DATES = [
-  '2026-09-07', '2026-09-14', '2026-09-21', '2026-09-28', '2026-10-05', '2026-10-12', '2026-10-19',
-  '2026-10-26', '2026-11-02', '2026-11-09', '2026-11-16', '2026-11-23', '2026-11-30', '2026-12-07',
-  '2026-12-14', '2026-12-21', '2026-12-28',
+  '2026-10-20', '2026-10-27', '2026-11-03', '2026-11-10', '2026-11-17', '2026-11-24',
+  '2026-12-01', '2026-12-08', '2026-12-15', '2026-12-22', '2026-12-29',
 ]
+
+/** Passa pra terça (mesmo horário) os "Curso de Barbearia" que já estão cadastrados numa
+ * segunda, da semana de BARBEARIA_TUESDAY_FROM em diante. Muda só a data — qualquer ajuste
+ * que o usuário tenha feito num evento (horário, anotação) é preservado. Se já existir um
+ * curso na terça de destino, a segunda vai pra lixeira em vez de duplicar (nada é apagado
+ * de vez). Eventos em outros dias da semana ficam intocados. */
+async function moveBarbeariaToTuesday(now: string) {
+  const courses = await db.events.filter((e) => e.title === 'Curso de Barbearia').toArray()
+  const takenDates = new Set(courses.map((e) => e.date))
+
+  for (const event of courses) {
+    if (event.date < BARBEARIA_TUESDAY_FROM) continue
+    const [year, month, day] = event.date.split('-').map(Number)
+    const date = new Date(year, month - 1, day)
+    if (date.getDay() !== 1) continue // só as segundas
+    const tuesday = toDateKey(addDays(date, 1))
+
+    if (takenDates.has(tuesday)) {
+      await db.trashItems.add({ id: crypto.randomUUID(), entityType: 'events', entityId: event.id, label: event.title, payload: event, deletedAt: now })
+      await db.events.delete(event.id)
+    } else {
+      await db.events.update(event.id, { date: tuesday, updatedAt: now })
+      takenDates.add(tuesday)
+    }
+  }
+}
 
 export async function ensureSeedData() {
   const now = new Date().toISOString()
 
-  await db.transaction('rw', [db.settings, db.profile, db.investmentCategories, db.workoutDays, db.events], async () => {
+  await db.transaction('rw', [db.settings, db.profile, db.investmentCategories, db.workoutDays, db.events, db.trashItems], async () => {
     let settings = await db.settings.get('settings')
     if (!settings) {
       settings = { id: 'settings', theme: 'dark', updatedAt: now }
@@ -264,6 +295,7 @@ export async function ensureSeedData() {
 
     // adiciona os compromissos fixos (treino de futevôlei + curso de barbearia) uma
     // única vez — nunca apaga nem mexe em nenhum evento que já exista
+    let seededNow = false
     if (!settings.recurringEventsSeeded) {
       const newEvents = [
         ...FUTEVOLEI_DATES.map((date) => ({
@@ -286,7 +318,15 @@ export async function ensureSeedData() {
         })),
       ]
       await db.events.bulkAdd(newEvents)
-      await db.settings.update('settings', { recurringEventsSeeded: true })
+      await db.settings.update('settings', { recurringEventsSeeded: true, barbeariaOnTuesday: true })
+      seededNow = true
+    }
+
+    // quem já tinha os compromissos antigos (barbearia na segunda) recebe a mudança pra terça
+    // uma única vez
+    if (!seededNow && !settings.barbeariaOnTuesday) {
+      await moveBarbeariaToTuesday(now)
+      await db.settings.update('settings', { barbeariaOnTuesday: true })
     }
 
     const profile = await db.profile.get('profile')

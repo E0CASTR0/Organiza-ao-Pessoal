@@ -178,6 +178,7 @@ export interface Settings {
   id: 'settings'
   theme: ThemeMode
   recurringEventsSeeded?: boolean // marca que os compromissos fixos (treino/curso) já foram adicionados uma vez
+  barbeariaOnTuesday?: boolean // marca que o curso de barbearia já foi passado de segunda pra terça
   updatedAt: string
 }
 
