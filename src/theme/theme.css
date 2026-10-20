@@ -29,6 +29,11 @@
 /* Tema escuro — padrão do app */
 :root,
 [data-theme='dark'] {
+  /* avisa o navegador que a página é escura: os controles nativos (seletor de data e hora do
+     iOS, barras de rolagem, campos de número) passam a se desenhar escuros também, em vez de
+     aparecerem claros por cima do app quando o iPhone está no modo claro */
+  color-scheme: dark;
+
   --bg-base: #060606;
   /* um tom acima do que era (#121211/#1b1b19/#262523): os cartões separavam do fundo com
      contraste de 1,08:1 — quase invisíveis; agora dá pra enxergar o contorno de cada camada */
@@ -78,6 +83,8 @@
 
 /* Tema claro — inverso real do escuro, mesma identidade */
 [data-theme='light'] {
+  color-scheme: light;
+
   --bg-base: #f6f4ef;
   --bg-elevated-1: #ffffff;
   --bg-elevated-2: #efece4;
@@ -163,4 +170,18 @@ body {
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--border-default) transparent;
+}
+
+/* Anel de foco pra quem navega por teclado (ou teclado externo no iPad). `:focus-visible` só
+   aparece nesse caso — tocar/clicar com o mouse nunca mostra o anel. Campos de texto ficam
+   de fora de propósito: eles já destacam o foco trocando a cor da borda. */
+:where(button, a[href], [role='checkbox'], [role='switch']):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* títulos quebram em linhas equilibradas, sem palavra sozinha no fim */
+h1,
+h2 {
+  text-wrap: balance;
 }
