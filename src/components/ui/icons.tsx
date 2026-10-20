@@ -12,6 +12,8 @@ const base = {
   strokeWidth: 1.6,
   strokeLinecap: 'round' as const,
   strokeLinejoin: 'round' as const,
+  // ícones são decorativos: o nome acessível vem do botão/texto ao redor
+  'aria-hidden': true as const,
 }
 
 export function HomeIcon(props: IconProps) {
@@ -196,6 +198,42 @@ export function GripIcon(props: IconProps) {
       <circle cx="15" cy="6" r="1.4" fill="currentColor" stroke="none" />
       <circle cx="15" cy="12" r="1.4" fill="currentColor" stroke="none" />
       <circle cx="15" cy="18" r="1.4" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+
+export function MinusIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M5 12h14" />
+    </svg>
+  )
+}
+
+/** Gota (água). */
+export function DropIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 3.5c3.4 4 6 7 6 10.2a6 6 0 0 1-12 0C6 10.5 8.6 7.5 12 3.5Z" />
+    </svg>
+  )
+}
+
+/** Chama (sequência de dias). */
+export function FlameIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12.2 3c.6 3.2-2.8 4.6-2.8 8a2.6 2.6 0 0 0 5.2 0c0-.9-.3-1.5-.8-2.1 2.4.9 4.2 3 4.2 5.7a6 6 0 0 1-12 0c0-4.6 4.4-6.2 6.2-11.6Z" />
+    </svg>
+  )
+}
+
+/** Relógio. */
+export function ClockIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 7.5V12l3 1.8" />
     </svg>
   )
 }

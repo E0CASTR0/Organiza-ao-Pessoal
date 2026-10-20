@@ -174,11 +174,24 @@ export interface Profile {
 
 export type ThemeMode = 'dark' | 'light'
 
+/** Cor de destaque do app (a "prata" é a original). */
+export type AccentKey = 'prata' | 'champagne' | 'bronze' | 'salvia'
+
+/** Copos de água bebidos num dia. */
+export interface WaterLog {
+  id: string
+  date: string // 'AAAA-MM-DD'
+  glasses: number
+  updatedAt: string
+}
+
 export interface Settings {
   id: 'settings'
   theme: ThemeMode
   recurringEventsSeeded?: boolean // marca que os compromissos fixos (treino/curso) já foram adicionados uma vez
   barbeariaOnTuesday?: boolean // marca que o curso de barbearia já foi passado de segunda pra terça
+  accent?: AccentKey // cor de destaque escolhida em Configurações
+  waterGoal?: number // meta diária de copos de água (padrão 8)
   updatedAt: string
 }
 

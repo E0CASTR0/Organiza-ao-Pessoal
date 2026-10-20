@@ -5,11 +5,20 @@ interface ReorderableListProps<T extends { id: string }> {
   onReorder: (orderedIds: string[]) => void
   /** Recebe o item e a função pra "grudar" no elemento que serve de alça de arrastar
    * (normalmente um ícone) via onTouchStart. */
-  renderItem: (item: T, dragHandleProps: { onTouchStart: (e: React.TouchEvent) => void }, dragging: boolean) => ReactNode
+  renderItem: (item: T, dragHandleProps: DragHandleProps, dragging: boolean) => ReactNode
   /** Altura aproximada de uma linha (px) — só é usada se não for possível medir no DOM. */
   rowHeight: number
   /** Espaçamento entre as linhas, como classe `gap-*` do Tailwind (padrão: gap-3). */
   gapClass?: string
+}
+
+/** Props pra espalhar no elemento que serve de alça. Além do toque, a alça funciona pelo teclado:
+ * setas pra cima/baixo movem o item (alternativa ao gesto de arrastar). */
+export interface DragHandleProps {
+  onTouchStart: (e: React.TouchEvent) => void
+  onKeyDown: (e: React.KeyboardEvent) => void
+  role: 'button'
+  tabIndex: 0
 }
 
 interface DragState {
@@ -151,6 +160,17 @@ export function ReorderableList<T extends { id: string }>({ items, onReorder, re
             {renderItem(
               item,
               {
+                role: 'button',
+                tabIndex: 0,
+                onKeyDown: (e) => {
+                  if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return
+                  e.preventDefault()
+                  const to = index + (e.key === 'ArrowUp' ? -1 : 1)
+                  if (to < 0 || to >= order.length) return
+                  const next = moveItem(order, index, to)
+                  setOrder(next)
+                  onReorder(next)
+                },
                 onTouchStart: (e) => {
                   startY.current = e.touches[0].clientY
                   offsetRef.current = 0

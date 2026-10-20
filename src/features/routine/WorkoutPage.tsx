@@ -8,11 +8,12 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { TrashIcon, PlusIcon } from '@/components/ui/icons'
 import { listWorkoutDays, renameWorkoutDay, listExercisesByDay, removeExercise } from '@/db/repositories/workout.repo'
 import { WEEKDAY_SHORT, toWeekdayIndex } from '@/utils/date'
-import { removeAnimated } from '@/utils/motion'
+import { useRemoveWithUndo } from '@/components/ui/useRemoveWithUndo'
 import { ExerciseFormModal } from './ExerciseFormModal'
 import type { Exercise } from '@/db/models'
 
 export function WorkoutPage() {
+  const removeRow = useRemoveWithUndo()
   const [selectedWeekday, setSelectedWeekday] = useState(() => toWeekdayIndex(new Date()))
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState<Exercise | null>(null)
@@ -109,7 +110,7 @@ export function WorkoutPage() {
                   tone="danger"
                   onClick={(e) => {
                     e.stopPropagation()
-                    void removeAnimated(e.currentTarget, () => removeExercise(exercise.id))
+                    void removeRow(e.currentTarget, { message: 'Exercício removido', entityType: 'exercises', entityId: exercise.id, remove: () => removeExercise(exercise.id) })
                   }}
                 >
                   <TrashIcon width={16} height={16} />

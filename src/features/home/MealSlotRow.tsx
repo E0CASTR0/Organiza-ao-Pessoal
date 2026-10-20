@@ -5,10 +5,11 @@ import { IconButton } from '@/components/ui/IconButton'
 import { TrashIcon, PlusIcon } from '@/components/ui/icons'
 import { listItemsByDietAndMeal, addMealItem, removeMealItem } from '@/db/repositories/dietMealItems.repo'
 import { MEAL_SLOT_LABELS } from '@/utils/mealSlots'
-import { removeAnimated } from '@/utils/motion'
+import { useRemoveWithUndo } from '@/components/ui/useRemoveWithUndo'
 import type { MealSlotKey } from '@/db/models'
 
 export function MealSlotRow({ dietId, meal }: { dietId: string; meal: MealSlotKey }) {
+  const removeRow = useRemoveWithUndo()
   const [name, setName] = useState('')
   const [calories, setCalories] = useState('')
 
@@ -26,7 +27,7 @@ export function MealSlotRow({ dietId, meal }: { dietId: string; meal: MealSlotKe
   return (
     <div>
       <div className="flex items-baseline justify-between">
-        <p className="text-sm font-medium uppercase tracking-wide text-[var(--text-tertiary)]">{MEAL_SLOT_LABELS[meal]}</p>
+        <p className="text-sm font-medium text-[var(--text-secondary)]">{MEAL_SLOT_LABELS[meal]}</p>
         {totalCalories > 0 && <p className="text-xs text-[var(--text-tertiary)]">{totalCalories} kcal</p>}
       </div>
 
@@ -38,7 +39,7 @@ export function MealSlotRow({ dietId, meal }: { dietId: string; meal: MealSlotKe
               <span className="truncate text-sm text-[var(--text-primary)]">{item.name}</span>
               <div className="flex shrink-0 items-center gap-2">
                 {item.calories != null && <span className="text-xs text-[var(--text-tertiary)]">{item.calories} kcal</span>}
-                <IconButton label="Remover" tone="danger" onClick={(e) => void removeAnimated(e.currentTarget, () => removeMealItem(item.id))}>
+                <IconButton label="Remover" tone="danger" onClick={(e) => void removeRow(e.currentTarget, { message: 'Prato removido', entityType: 'dietMealItems', entityId: item.id, remove: () => removeMealItem(item.id) })}>
                   <TrashIcon width={13} height={13} />
                 </IconButton>
               </div>
@@ -58,6 +59,8 @@ export function MealSlotRow({ dietId, meal }: { dietId: string; meal: MealSlotKe
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Prato / alimento"
+          aria-label="Prato ou alimento"
+          autoComplete="off"
           className="min-w-0 flex-1 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--field-bg)] shadow-[var(--field-shadow)] px-2.5 py-1.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none focus:border-[var(--accent)]"
         />
         <input
@@ -66,6 +69,8 @@ export function MealSlotRow({ dietId, meal }: { dietId: string; meal: MealSlotKe
           type="number"
           inputMode="numeric"
           placeholder="kcal"
+          aria-label="Calorias"
+          autoComplete="off"
           className="w-16 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--field-bg)] shadow-[var(--field-shadow)] px-2 py-1.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none focus:border-[var(--accent)]"
         />
         <Button type="submit" size="sm" aria-label="Adicionar prato">

@@ -40,7 +40,9 @@ export function ProfilePage() {
         <TextField label="Apelido" value={nickname} onChange={(e) => setNickname(e.target.value)} placeholder="Como quer ser chamado" />
         <div className="flex items-center gap-3">
           <Button onClick={() => void handleSave()}>Salvar</Button>
-          {saved && <span className="text-sm text-[var(--success)]">Salvo!</span>}
+          <span role="status" aria-live="polite" className="text-sm text-[var(--success)]">
+            {saved ? 'Alterações salvas' : ''}
+          </span>
         </div>
       </Card>
     </div>

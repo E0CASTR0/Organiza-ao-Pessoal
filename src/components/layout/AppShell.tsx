@@ -11,7 +11,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     // posição nem em tamanho, o `fixed inset-0` acima continua exatamente igual
     <div className="app-ambient fixed inset-0 flex flex-col bg-[var(--bg-base)]">
       <main
-        className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
+        className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain"
         style={{ paddingTop: 'calc(var(--safe-top) + 1.25rem)' }}
       >
         {/* pb-28 dá espaço pro conteúdo não ficar escondido atrás da barra, que agora é

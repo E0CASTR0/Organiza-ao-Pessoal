@@ -6,12 +6,13 @@ import { IconButton } from '@/components/ui/IconButton'
 import { addInvestmentReturn, listReturnsByInvestmentAndMonth, removeInvestmentReturn } from '@/db/repositories/investments.repo'
 import { currentMonthKey, formatMonthLabel } from '@/utils/date'
 import { formatCurrency } from '@/utils/currency'
-import { removeAnimated } from '@/utils/motion'
+import { useRemoveWithUndo } from '@/components/ui/useRemoveWithUndo'
 
 /** Lançamentos de retorno do mês atual pra um investimento — em vez de um campo único que
  * se sobrescreve, cada "adicionar" soma. Reinicia sozinho todo dia 1 (o mês novo ainda não
  * tem lançamento nenhum). */
 export function InvestmentReturnLog({ investmentId }: { investmentId: string }) {
+  const removeRow = useRemoveWithUndo()
   const [value, setValue] = useState('')
   const month = currentMonthKey()
   const entries = useLiveQuery(() => listReturnsByInvestmentAndMonth(investmentId, month), [investmentId, month]) ?? []
@@ -36,7 +37,7 @@ export function InvestmentReturnLog({ investmentId }: { investmentId: string }) 
           {entries.map((entry) => (
             <div key={entry.id} data-row className="item-in flex min-h-9 items-center justify-between gap-2">
               <span className="text-sm text-[var(--text-primary)]">{formatCurrency(entry.value)}</span>
-              <IconButton label="Remover lançamento" tone="danger" onClick={(e) => void removeAnimated(e.currentTarget, () => removeInvestmentReturn(entry.id))}>
+              <IconButton label="Remover lançamento" tone="danger" onClick={(e) => void removeRow(e.currentTarget, { message: 'Lançamento removido', entityType: 'investmentReturns', entityId: entry.id, remove: () => removeInvestmentReturn(entry.id) })}>
                 <TrashIcon width={13} height={13} />
               </IconButton>
             </div>
@@ -58,6 +59,8 @@ export function InvestmentReturnLog({ investmentId }: { investmentId: string }) 
           inputMode="decimal"
           step="0.01"
           placeholder="Adicionar retorno (R$)"
+          aria-label="Valor do retorno em reais"
+          autoComplete="off"
           className="min-w-0 flex-1 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--field-bg)] shadow-[var(--field-shadow)] px-2.5 py-1.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none focus:border-[var(--accent)]"
         />
         <Button type="submit" size="sm" aria-label="Adicionar lançamento">

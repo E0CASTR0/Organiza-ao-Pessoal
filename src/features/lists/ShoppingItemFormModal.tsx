@@ -44,7 +44,7 @@ export function ShoppingItemFormModal({ open, onClose, editing }: ShoppingItemFo
     <Modal open={open} onClose={onClose} title={editing ? 'Editar item' : 'Novo item'}>
       <div className="flex flex-col gap-4">
         <ImagePicker value={image} onChange={setImage} />
-        <TextField label="Nome do produto" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Tênis, relógio..." autoFocus />
+        <TextField label="Nome do produto" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Tênis, relógio…" autoFocus />
         <TextField label="Valor (opcional)" type="number" inputMode="decimal" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="0,00" />
         <div className="mt-1 flex items-center justify-between gap-2.5">
           {editing ? (

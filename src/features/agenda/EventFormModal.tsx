@@ -45,12 +45,12 @@ export function EventFormModal({ open, onClose, defaultDate, editing }: EventFor
   return (
     <Modal open={open} onClose={onClose} title={editing ? 'Editar evento' : 'Novo evento'}>
       <div className="flex flex-col gap-3.5">
-        <TextField label="Título" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Reunião, consulta..." autoFocus />
+        <TextField label="Título" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Reunião, consulta…" autoFocus />
         <div className="flex gap-3">
           <TextField label="Data" type="date" value={date} onChange={(e) => setDate(e.target.value)} className="flex-1" />
           <TextField label="Hora (opcional)" type="time" value={time} onChange={(e) => setTime(e.target.value)} className="flex-1" />
         </div>
-        <TextArea label="Notas" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Detalhes do evento..." rows={3} />
+        <TextArea label="Notas" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Detalhes do evento…" rows={3} />
         <div className="mt-1 flex items-center justify-between gap-2.5">
           {editing ? (
             <Button variant="ghost" onClick={() => void handleDelete()}>

@@ -35,3 +35,15 @@ export async function purgeTrashItem(trashId: string): Promise<void> {
 export async function purgeAllTrash(): Promise<void> {
   await db.trashItems.clear()
 }
+
+/** Desfaz a exclusão mais recente de um registro (usado pelo "Desfazer" logo depois de apagar). */
+export async function restoreLatestFromTrash(entityType: string, entityId: string): Promise<void> {
+  const matches = await db.trashItems
+    .where('entityType')
+    .equals(entityType)
+    .filter((item) => item.entityId === entityId)
+    .toArray()
+  if (matches.length === 0) return
+  matches.sort((a, b) => b.deletedAt.localeCompare(a.deletedAt))
+  await restoreTrashItem(matches[0].id)
+}

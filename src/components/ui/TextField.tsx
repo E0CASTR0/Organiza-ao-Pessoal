@@ -5,13 +5,13 @@ interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const fieldClasses =
-  'w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--field-bg)] shadow-[var(--field-shadow)] px-3.5 py-2.5 text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none transition-colors focus:border-[var(--accent)]'
+  'w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--field-bg)] shadow-[var(--field-shadow)] px-3.5 py-2.5 text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none transition-colors focus:border-[var(--accent)] focus:ring-1 focus:ring-[var(--accent)]'
 
 export function TextField({ label, className = '', id, ...rest }: TextFieldProps) {
   return (
     <label className="flex flex-col gap-1.5">
       {label && <span className="text-sm text-[var(--text-secondary)]">{label}</span>}
-      <input id={id} className={`${fieldClasses} ${className}`} {...rest} />
+      <input id={id} autoComplete="off" className={`${fieldClasses} ${className}`} {...rest} />
     </label>
   )
 }
@@ -24,7 +24,7 @@ export function TextArea({ label, className = '', id, rows = 4, ...rest }: TextA
   return (
     <label className="flex flex-col gap-1.5">
       {label && <span className="text-sm text-[var(--text-secondary)]">{label}</span>}
-      <textarea id={id} rows={rows} className={`${fieldClasses} resize-y ${className}`} {...rest} />
+      <textarea id={id} rows={rows} autoComplete="off" className={`${fieldClasses} resize-y ${className}`} {...rest} />
     </label>
   )
 }

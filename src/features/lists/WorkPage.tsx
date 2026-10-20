@@ -9,9 +9,10 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { TrashIcon, PlusIcon } from '@/components/ui/icons'
 import { listWorkTasks, addWorkTask, toggleWorkTask, removeWorkTask } from '@/db/repositories/workTasks.repo'
 import { formatDateShort } from '@/utils/date'
-import { removeAnimated } from '@/utils/motion'
+import { useRemoveWithUndo } from '@/components/ui/useRemoveWithUndo'
 
 export function WorkPage() {
+  const removeRow = useRemoveWithUndo()
   const [title, setTitle] = useState('')
   const tasks = useLiveQuery(() => listWorkTasks(), []) ?? []
 
@@ -49,7 +50,7 @@ export function WorkPage() {
               <Checkbox className="self-stretch" checked={task.completed} onChange={() => void toggleWorkTask(task.id)} label={task.title} />
               <div className="flex shrink-0 items-center gap-2.5">
                 {task.dueDate && <span className="text-xs text-[var(--text-tertiary)]">{formatDateShort(task.dueDate)}</span>}
-                <IconButton label="Remover" tone="danger" onClick={(e) => void removeAnimated(e.currentTarget, () => removeWorkTask(task.id))}>
+                <IconButton label="Remover" tone="danger" onClick={(e) => void removeRow(e.currentTarget, { message: 'Tarefa removida', entityType: 'workTasks', entityId: task.id, remove: () => removeWorkTask(task.id) })}>
                   <TrashIcon width={16} height={16} />
                 </IconButton>
               </div>

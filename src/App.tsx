@@ -3,6 +3,7 @@ import { HashRouter } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { ErrorBoundary } from '@/components/layout/ErrorBoundary'
 import { ThemeProvider } from '@/theme/ThemeProvider'
+import { ToastProvider } from '@/components/ui/ToastProvider'
 import { AppRoutes } from '@/router/routes'
 import { ensureSeedData } from '@/db/db'
 
@@ -17,13 +18,15 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <HashRouter>
-        <AppShell>
-          <ErrorBoundary>
-            <AppRoutes />
-          </ErrorBoundary>
-        </AppShell>
-      </HashRouter>
+      <ToastProvider>
+        <HashRouter>
+          <AppShell>
+            <ErrorBoundary>
+              <AppRoutes />
+            </ErrorBoundary>
+          </AppShell>
+        </HashRouter>
+      </ToastProvider>
     </ThemeProvider>
   )
 }

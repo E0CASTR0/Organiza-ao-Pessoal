@@ -20,6 +20,7 @@ import type {
   Profile,
   Settings,
   TrashItem,
+  WaterLog,
 } from './models'
 
 export const db = new Dexie('organizacao-pessoal') as Dexie & {
@@ -42,6 +43,7 @@ export const db = new Dexie('organizacao-pessoal') as Dexie & {
   profile: EntityTable<Profile, 'id'>
   settings: EntityTable<Settings, 'id'>
   trashItems: EntityTable<TrashItem, 'id'>
+  waterLogs: EntityTable<WaterLog, 'id'>
 }
 
 // Observação: campos booleanos (bought, completed, isActive...) não entram como índice
@@ -227,6 +229,30 @@ db.version(4)
         delete inv.monthlyReturnValue
       })
   })
+
+// v5: contador de água por dia (tela inicial). Só ADICIONA uma tabela — nada existente muda.
+db.version(5).stores({
+  dailyGoals: 'id, order',
+  dailyGoalCompletions: 'id, goalId, date',
+  events: 'id, date',
+  monthlyPriorities: 'id, month, order',
+  shoppingItems: 'id, order',
+  workTasks: 'id, order',
+  notes: 'id, updatedAt',
+  investmentCategories: 'id, order',
+  investments: 'id, categoryId',
+  investmentReturns: 'id, investmentId, month',
+  workoutDays: 'id, weekday, order',
+  exercises: 'id, workoutDayId, order',
+  diets: 'id',
+  dietMealItems: 'id, dietId, meal, order',
+  fixedBills: 'id, dueDay, order',
+  fixedBillPayments: 'id, fixedBillId, month',
+  profile: 'id',
+  settings: 'id',
+  trashItems: 'id, entityType, deletedAt',
+  waterLogs: 'id, date',
+})
 
 /** Garante as linhas singleton (profile/settings) e os dados iniciais na primeira vez que o app abre.
  * Roda tudo dentro de UMA transação: como o React.StrictMode (dev) dispara o efeito de montagem duas

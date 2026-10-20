@@ -7,10 +7,11 @@ import { Button } from '@/components/ui/Button'
 import { IconButton } from '@/components/ui/IconButton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { PlusIcon, TrashIcon, WalletIcon } from '@/components/ui/icons'
-import { listCategories, listInvestments, listReturnsByMonth, totalReturnAllTime, removeCategory } from '@/db/repositories/investments.repo'
+import { listCategories, listInvestments, listReturnsByMonth, totalReturnAllTime, removeCategory, monthlyReturnTotals } from '@/db/repositories/investments.repo'
 import { currentMonthKey } from '@/utils/date'
 import { formatCurrency } from '@/utils/currency'
 import { InvestmentFormModal } from './InvestmentFormModal'
+import { ReturnsChart } from './ReturnsChart'
 import { CategoryFormModal } from './CategoryFormModal'
 import type { Investment } from '@/db/models'
 
@@ -25,6 +26,7 @@ export function InvestmentsPage() {
   const investments = useLiveQuery(() => listInvestments(), []) ?? []
   const monthReturns = useLiveQuery(() => listReturnsByMonth(month), [month]) ?? []
   const allTimeReturn = useLiveQuery(() => totalReturnAllTime(), [monthReturns]) ?? 0
+  const monthlyTotals = useLiveQuery(() => monthlyReturnTotals(6), [])
 
   const totalInvested = investments.reduce((sum, inv) => sum + inv.amountInvested, 0)
   const totalReturnThisMonth = monthReturns.reduce((sum, r) => sum + r.value, 0)
@@ -66,18 +68,20 @@ export function InvestmentsPage() {
 
       <div className="reveal grid grid-cols-2 gap-3">
         <Card className="p-4">
-          <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">Total investido</p>
-          <p className="mt-1 font-heading text-2xl lining-nums tabular-nums text-[var(--text-primary)]">{formatCurrency(totalInvested)}</p>
+          <p className="text-sm text-[var(--text-secondary)]">Total investido</p>
+          <p className="mt-1 font-heading text-2xl text-[var(--text-primary)]">{formatCurrency(totalInvested)}</p>
         </Card>
         <Card className="p-4">
-          <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">Retorno do mês</p>
-          <p className="mt-1 font-heading text-2xl lining-nums tabular-nums text-[var(--text-primary)]">{formatCurrency(totalReturnThisMonth)}</p>
+          <p className="text-sm text-[var(--text-secondary)]">Retorno do mês</p>
+          <p className="mt-1 font-heading text-2xl text-[var(--text-primary)]">{formatCurrency(totalReturnThisMonth)}</p>
         </Card>
         <Card className="col-span-2 p-4">
-          <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">Retorno total (todos os meses)</p>
-          <p className="mt-1 font-heading text-2xl lining-nums tabular-nums text-[var(--success)]">{formatCurrency(allTimeReturn)}</p>
+          <p className="text-sm text-[var(--text-secondary)]">Retorno total (todos os meses)</p>
+          <p className="mt-1 font-heading text-2xl text-[var(--success)]">{formatCurrency(allTimeReturn)}</p>
         </Card>
       </div>
+
+      {monthlyTotals && monthlyTotals.some((m) => m.total !== 0) && <ReturnsChart data={monthlyTotals} />}
 
       {categories.length === 0 ? (
         <EmptyState title="Nenhuma categoria ainda" description="Crie categorias como CDI, Liquidez Diária ou Bolsa de Valores." />
@@ -87,7 +91,7 @@ export function InvestmentsPage() {
           return (
             <section key={category.id}>
               <div className="mb-2.5 flex items-center justify-between">
-                <h2 className="text-sm font-medium uppercase tracking-wide text-[var(--text-tertiary)]">{category.name}</h2>
+                <h2 className="text-sm font-medium text-[var(--text-secondary)]">{category.name}</h2>
                 {/* 24 px entre os ícones: as áreas de toque ampliadas (IconButton) não se sobrepõem */}
                 <div className="flex items-center gap-6">
                   <IconButton label="Adicionar investimento" tone="accent" onClick={() => openNew(category.id)}>

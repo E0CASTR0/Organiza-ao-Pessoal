@@ -61,13 +61,43 @@ export function AgendaPage() {
 
       {view === 'day' ? (
         <>
+          {/* faixa da semana: toque num dia pra ir até ele; o ponto marca os dias que têm compromisso */}
+          <div role="group" aria-label="Dias desta semana" className="grid grid-cols-7 gap-1.5">
+            {Array.from({ length: 7 }, (_, i) => addDays(weekStart, i)).map((day, i) => {
+              const key = toDateKey(day)
+              const selected = key === dateKey
+              const isToday = key === todayKey()
+              const hasEvents = weekEvents.some((e) => e.date === key)
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  aria-pressed={selected}
+                  aria-label={`${WEEKDAY_LABELS[i]}, ${formatDateShort(key)}${hasEvents ? ', com compromissos' : ''}`}
+                  onClick={() => setAnchor(day)}
+                  className={`press flex flex-col items-center gap-1 rounded-[var(--radius-md)] border py-2 ${
+                    selected
+                      ? 'border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-contrast)] shadow-[var(--btn-shadow)]'
+                      : isToday
+                        ? 'border-[var(--accent)] text-[var(--text-primary)]'
+                        : 'border-[var(--border-subtle)] text-[var(--text-secondary)]'
+                  }`}
+                >
+                  <span className={`text-[11px] font-medium ${selected ? '' : 'text-[var(--text-tertiary)]'}`}>{WEEKDAY_SHORT[i]}</span>
+                  <span className="text-base font-semibold leading-none">{day.getDate()}</span>
+                  <span className={`h-1 w-1 rounded-full ${hasEvents ? (selected ? 'bg-[var(--accent-contrast)]' : 'bg-[var(--accent)]') : 'bg-transparent'}`} />
+                </button>
+              )
+            })}
+          </div>
+
           <div className="flex items-center justify-between">
             <IconButton label="Dia anterior" onClick={() => setAnchor((d) => addDays(d, -1))}>
               <ChevronLeftIcon width={20} height={20} />
             </IconButton>
             <div className="text-center">
-              <p className="text-xs font-medium uppercase tracking-wide text-[var(--text-tertiary)]">{WEEKDAY_LABELS[toWeekdayIndex(anchor)]}</p>
-              <p className="font-heading text-[1.2rem] font-medium leading-snug text-[var(--text-primary)]">{formatDateLong(dateKey)}</p>
+              <p className="text-sm text-[var(--text-secondary)]">{WEEKDAY_LABELS[toWeekdayIndex(anchor)]}</p>
+              <p className="font-heading text-[1.15rem] font-semibold leading-snug text-[var(--text-primary)]">{formatDateLong(dateKey)}</p>
               {dateKey !== todayKey() && (
                 <button onClick={() => setAnchor(new Date())} className="press text-xs text-[var(--accent)]">
                   Voltar para hoje
@@ -83,7 +113,7 @@ export function AgendaPage() {
               depois do outro — trocar de dia ganha movimento em vez de "trocar o texto" */}
           <div key={dateKey} className="reveal flex flex-col gap-2.5">
             {dayEvents.length === 0 ? (
-              <EmptyState title="Nenhum evento neste dia" description="Toque no + para adicionar um compromisso." />
+              <EmptyState icon={<CalendarIcon width={22} height={22} />} title="Nenhum evento neste dia" description="Adicione um compromisso pra esse dia." actionLabel="Novo evento" onAction={openNew} />
             ) : (
               dayEvents.map((event) => (
                 <Card key={event.id} className="p-3.5" onClick={() => openEdit(event)}>
@@ -119,7 +149,7 @@ export function AgendaPage() {
               const events = weekEvents.filter((e) => e.date === key)
               return (
                 <div key={key}>
-                  <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-[var(--text-tertiary)]">
+                  <p className="mb-1.5 text-sm font-medium text-[var(--text-secondary)]">
                     {WEEKDAY_SHORT[toWeekdayIndex(day)]} · {formatDateShort(key)}
                     {key === todayKey() && <span className="ml-1.5 text-[var(--accent)]">· hoje</span>}
                   </p>

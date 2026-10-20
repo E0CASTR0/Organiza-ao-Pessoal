@@ -69,3 +69,19 @@ export function currentBillCycleKey(dueDay: number, today: Date = new Date()): s
   const prevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1)
   return toMonthKey(prevMonth)
 }
+
+const longDateFormatter = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })
+
+/** "terça-feira, 20 de outubro" */
+export function formatDateHeader(date: Date): string {
+  return longDateFormatter.format(date)
+}
+
+/** Inicial do dia da semana ('S', 'T', 'Q'...) — pros mini-gráficos da semana. */
+export const WEEKDAY_INITIAL = ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'] as const
+
+/** Só a primeira letra maiúscula ("terça-feira, 20 de outubro" -> "Terça-feira, 20 de outubro"). O
+ * `capitalize` do CSS põe maiúscula em TODAS as palavras ("De Outubro"), por isso não serve. */
+export function capitalizeFirst(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1)
+}

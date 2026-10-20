@@ -72,7 +72,7 @@ export function InvestmentFormModal({ open, onClose, categories, defaultCategory
             ))}
           </select>
         </label>
-        <TextField label="Nome / empresa" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Tesouro Selic, PETR4..." autoFocus />
+        <TextField label="Nome / empresa" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Tesouro Selic, PETR4…" autoFocus />
         <TextField label="Ticker (opcional)" value={ticker} onChange={(e) => setTicker(e.target.value)} placeholder="Ex: PETR4" />
         <TextField label="Valor investido" type="number" inputMode="decimal" step="0.01" value={amountInvested} onChange={(e) => setAmountInvested(e.target.value)} />
         <TextField label="Cotação atual (opcional)" type="number" inputMode="decimal" step="0.01" value={currentQuote} onChange={(e) => setCurrentQuote(e.target.value)} />

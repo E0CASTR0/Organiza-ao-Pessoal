@@ -41,7 +41,7 @@ export function NoteFormModal({ open, onClose, editing }: NoteFormModalProps) {
     <Modal open={open} onClose={onClose} title={editing ? 'Editar nota' : 'Nova nota'}>
       <div className="flex flex-col gap-3.5">
         <TextField label="Título" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Título (opcional)" autoFocus />
-        <TextArea label="Anotação" value={content} onChange={(e) => setContent(e.target.value)} placeholder="Escreva aqui..." rows={10} />
+        <TextArea label="Anotação" value={content} onChange={(e) => setContent(e.target.value)} placeholder="Escreva aqui…" rows={10} />
         <div className="mt-1 flex items-center justify-between gap-2.5">
           {editing ? (
             <Button variant="ghost" onClick={() => void handleDelete()}>

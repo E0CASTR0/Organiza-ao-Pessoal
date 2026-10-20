@@ -158,6 +158,12 @@
   animation: none;
 }
 
+/* durante o deslize de troca de tela (SwipeView) a página inteira já está se mexendo — os cartões
+   não fazem a própria entrada por cima, senão a tela chega "vazia" e vai aparecendo aos poucos */
+[data-nav='slide'] .reveal > * {
+  animation: none;
+}
+
 /* item novo numa lista (adicionou uma meta, uma tarefa...) */
 .item-in {
   animation: item-in var(--dur-base) var(--ease-spring) backwards;
@@ -305,5 +311,115 @@
   }
   .seg-thumb[data-ready] {
     transition: none;
+  }
+}
+
+/* ---------- componentes novos (anel de progresso, aviso com "Desfazer", esqueleto) ---------- */
+
+/* o anel de metas "se desenha" do zero ao valor atual quando a tela abre */
+@keyframes ring-in {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+.ring-arc {
+  animation: ring-in 900ms var(--ease-spring) backwards;
+  transition: stroke-dashoffset 700ms var(--ease-spring);
+}
+
+/* barras (semana, água, contas pagas) crescem da base/da esquerda — só transform */
+@keyframes grow-y {
+  from {
+    transform: scaleY(0);
+  }
+}
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
+}
+.bar-y {
+  transform-origin: bottom;
+  animation: grow-y 700ms var(--ease-spring) backwards;
+}
+.bar-x {
+  transform-origin: left;
+  animation: grow-x 800ms var(--ease-spring) backwards;
+  transition: transform 500ms var(--ease-spring);
+}
+
+/* bolinha de "tem coisa chegando": um halo que respira, em loop lento (só enquanto o próximo
+   compromisso está perto — ver NextEventCard) */
+@keyframes halo {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.55;
+  }
+  70%,
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+.halo {
+  animation: halo 2400ms var(--ease-spring) infinite;
+}
+
+/* esqueleto: bloco cinza com um brilho que passa, no lugar do conteúdo enquanto carrega */
+@keyframes shimmer {
+  from {
+    transform: translate3d(-100%, 0, 0);
+  }
+  to {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--bg-elevated-2);
+}
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+  animation: shimmer 1400ms ease-in-out infinite;
+}
+
+/* aviso flutuante */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0) scale(0.96);
+  }
+}
+@keyframes toast-out {
+  to {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.97);
+  }
+}
+.toast {
+  animation: toast-in 380ms var(--ease-pop) backwards;
+}
+.toast[data-leaving='true'] {
+  animation: toast-out 200ms var(--ease-in-soft) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .halo,
+  .skeleton::after {
+    animation: none;
+  }
+  .ring-arc,
+  .bar-y,
+  .bar-x,
+  .toast {
+    animation: fade-in 200ms ease both;
+    transition: none;
+  }
+  .toast[data-leaving='true'] {
+    animation: fade-out 150ms ease forwards;
   }
 }

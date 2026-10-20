@@ -6,6 +6,7 @@ import { Toggle } from '@/components/ui/Toggle'
 import { useTheme } from '@/theme/useTheme'
 import { BackupSection } from './BackupSection'
 import { DangerZone } from './DangerZone'
+import { AppearanceSection } from './AppearanceSection'
 import { TrashIcon, SettingsIcon } from '@/components/ui/icons'
 
 export function SettingsPage() {
@@ -23,6 +24,8 @@ export function SettingsPage() {
         </div>
         <Toggle checked={theme === 'dark'} onChange={toggleTheme} aria-label="Alternar tema" />
       </Card>
+
+      <AppearanceSection />
 
       <Link to="/mais/lixeira" className="surface surface-interactive press flex items-center justify-between rounded-[var(--radius-md)] p-4">
         <div className="flex items-center gap-3">

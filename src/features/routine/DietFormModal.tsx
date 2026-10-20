@@ -46,8 +46,8 @@ export function DietFormModal({ open, onClose, editing }: DietFormModalProps) {
   return (
     <Modal open={open} onClose={onClose} title={editing ? 'Editar dieta' : 'Nova dieta'}>
       <div className="flex flex-col gap-3.5">
-        <TextField label="Título" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Cutting, Bulk, Low carb..." autoFocus />
-        <TextArea label="Descrição" value={content} onChange={(e) => setContent(e.target.value)} placeholder="Observações gerais sobre a dieta..." rows={4} />
+        <TextField label="Título" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Cutting, Bulk, Low carb…" autoFocus />
+        <TextArea label="Descrição" value={content} onChange={(e) => setContent(e.target.value)} placeholder="Observações gerais sobre a dieta…" rows={4} />
 
         <div>
           <span className="mb-1.5 block text-sm text-[var(--text-secondary)]">Refeições (aparecem na tela inicial)</span>

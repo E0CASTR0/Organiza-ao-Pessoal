@@ -9,8 +9,10 @@
  */
 
 :root {
-  --font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Uma família só (Geist) pro app inteiro — o serifado dos títulos foi tirado: em app de uso
+     diário o título combina melhor com o resto da interface. */
+  --font-heading: 'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: 'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   --radius-sm: 8px;
   --radius-md: 14px;
@@ -123,14 +125,12 @@
   --overlay: rgba(20, 18, 14, 0.45);
 }
 
-/* Fonte dos títulos (Playfair Display). A classe `font-[var(--font-heading)]` que existia antes
-   NÃO funcionava: o Tailwind v4 lê `font-[var(--x)]` como font-WEIGHT (gerava
-   `font-weight: var(--font-heading)`, valor inválido), então os títulos sempre saíram em
-   Inter e a Playfair nunca chegou a ser usada. Números em algarismos "de altura" uniforme
-   (lining): os padrões da Playfair são em estilo antigo, com dígitos de alturas diferentes. */
+/* Fonte dos títulos. O `font-[var(--font-heading)]` antigo virava font-WEIGHT no Tailwind v4
+   (valor inválido), então precisa desta classe própria. Aperta um pouco o espaçamento entre
+   letras, como se faz em títulos grandes. */
 @utility font-heading {
   font-family: var(--font-heading);
-  font-variant-numeric: lining-nums;
+  letter-spacing: -0.02em;
 }
 
 /* #root só precisa preencher o body (que já é fixed+inset:0 logo abaixo) — html/body
@@ -180,8 +180,59 @@ body {
   outline-offset: 2px;
 }
 
+/* sem o atraso de toque duplo (e sem zoom por toque duplo) nos controles — o resto da página
+   continua com o comportamento normal de toque */
+a,
+button,
+[role='button'],
+[role='checkbox'],
+[role='switch'],
+input,
+select,
+textarea,
+label {
+  touch-action: manipulation;
+}
+
 /* títulos quebram em linhas equilibradas, sem palavra sozinha no fim */
 h1,
 h2 {
   text-wrap: balance;
+}
+
+/* ---------- Cor de destaque (Configurações > Aparência) ----------
+   "prata" é a original (já definida acima). As outras só trocam os tons de destaque, sempre
+   dessaturados pra continuar combinando com o preto/grafite. */
+html[data-theme='dark'][data-accent='champagne'] {
+  --accent: #d6c29a;
+  --accent-strong: #efe0bd;
+  --accent-pressed: #b49f78;
+  --ambient: rgba(214, 194, 154, 0.09);
+}
+html[data-theme='dark'][data-accent='bronze'] {
+  --accent: #c9a07e;
+  --accent-strong: #e6c3a3;
+  --accent-pressed: #a67f60;
+  --ambient: rgba(201, 160, 126, 0.085);
+}
+html[data-theme='dark'][data-accent='salvia'] {
+  --accent: #9db8a4;
+  --accent-strong: #bdd6c3;
+  --accent-pressed: #7d9884;
+  --ambient: rgba(157, 184, 164, 0.08);
+}
+html[data-theme='light'][data-accent='champagne'] {
+  --accent: #6e5a2d;
+  --accent-strong: #4d3e1c;
+  --accent-pressed: #85703f;
+}
+html[data-theme='light'][data-accent='bronze'] {
+  --accent: #7a4f2f;
+  --accent-strong: #573520;
+  --accent-pressed: #906044;
+}
+html[data-theme='light'][data-accent='salvia'] {
+  --accent: #3f5f48;
+  --accent-strong: #2c4533;
+  --accent-pressed: #56775f;
 }

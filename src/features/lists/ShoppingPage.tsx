@@ -32,7 +32,7 @@ export function ShoppingPage() {
       {items.length > 0 && (
         <Card className="flex items-center justify-between p-4">
           <p className="text-sm text-[var(--text-secondary)]">Total da lista</p>
-          <p className="font-heading text-2xl lining-nums tabular-nums text-[var(--text-primary)]">{formatCurrency(total)}</p>
+          <p className="font-heading text-2xl text-[var(--text-primary)]">{formatCurrency(total)}</p>
         </Card>
       )}
 
@@ -50,7 +50,7 @@ export function ShoppingPage() {
               <button type="button" onClick={() => openEdit(item)} className="press block w-full text-left">
                 <div className="aspect-square w-full bg-[var(--bg-elevated-2)]">
                   {item.imageBase64 ? (
-                    <img src={item.imageBase64} alt={item.name} className="h-full w-full object-cover" />
+                    <img src={item.imageBase64} alt={item.name} width={320} height={320} loading="lazy" decoding="async" className="h-full w-full object-cover" />
                   ) : (
                     <div className="flex h-full items-center justify-center text-[var(--text-tertiary)]">Sem imagem</div>
                   )}

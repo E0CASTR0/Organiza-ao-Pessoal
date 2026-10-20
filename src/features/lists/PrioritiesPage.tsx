@@ -8,7 +8,7 @@ import { TextField } from '@/components/ui/TextField'
 import { TrashIcon, PlusIcon, ChevronLeftIcon, ChevronRightIcon } from '@/components/ui/icons'
 import { listPrioritiesByMonth, addPriority, togglePriority, removePriority } from '@/db/repositories/monthlyPriorities.repo'
 import { currentMonthKey, formatMonthLabel } from '@/utils/date'
-import { removeAnimated } from '@/utils/motion'
+import { useRemoveWithUndo } from '@/components/ui/useRemoveWithUndo'
 
 function shiftMonth(monthKey: string, delta: number): string {
   const [year, month] = monthKey.split('-').map(Number)
@@ -17,6 +17,7 @@ function shiftMonth(monthKey: string, delta: number): string {
 }
 
 export function PrioritiesPage() {
+  const removeRow = useRemoveWithUndo()
   const [month, setMonth] = useState(currentMonthKey())
   const [newTitle, setNewTitle] = useState('')
 
@@ -35,7 +36,7 @@ export function PrioritiesPage() {
         <IconButton label="Mês anterior" onClick={() => setMonth((m) => shiftMonth(m, -1))}>
           <ChevronLeftIcon width={20} height={20} />
         </IconButton>
-        <p className="text-sm font-medium capitalize text-[var(--text-primary)]">{formatMonthLabel(month)}</p>
+        <p className="text-sm font-medium text-[var(--text-primary)]">{formatMonthLabel(month)}</p>
         <IconButton label="Próximo mês" onClick={() => setMonth((m) => shiftMonth(m, 1))}>
           <ChevronRightIcon width={20} height={20} />
         </IconButton>
@@ -50,7 +51,7 @@ export function PrioritiesPage() {
               {priorities.map((item) => (
                 <div key={item.id} data-row className="flex min-h-11 items-center justify-between gap-2">
                   <Checkbox className="self-stretch" checked={item.completed} onChange={() => void togglePriority(item.id)} label={item.title} />
-                  <IconButton label="Remover" tone="danger" onClick={(e) => void removeAnimated(e.currentTarget, () => removePriority(item.id))}>
+                  <IconButton label="Remover" tone="danger" onClick={(e) => void removeRow(e.currentTarget, { message: 'Prioridade removida', entityType: 'monthlyPriorities', entityId: item.id, remove: () => removePriority(item.id) })}>
                     <TrashIcon width={16} height={16} />
                   </IconButton>
                 </div>

@@ -57,5 +57,7 @@ export async function removeGoal(id: string): Promise<void> {
   if (!goal) return
   await moveToTrash('dailyGoals', id, goal.title, goal)
   await db.dailyGoals.delete(id)
-  await db.dailyGoalCompletions.where('goalId').equals(id).delete()
+  // O histórico de conclusões da meta NÃO é apagado: assim, se ela voltar da Lixeira (ou pelo
+  // "Desfazer"), a sequência de dias seguidos volta junto. Conclusões de metas que não existem
+  // mais simplesmente não entram em nenhuma conta.
 }

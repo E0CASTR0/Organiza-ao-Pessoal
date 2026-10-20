@@ -55,7 +55,7 @@ export function FixedBillFormModal({ open, onClose, editing }: FixedBillFormModa
     <Modal open={open} onClose={onClose} title={editing ? 'Editar conta' : 'Nova conta fixa'}>
       <div className="flex flex-col gap-3.5">
         <ImagePicker value={image} onChange={setImage} />
-        <TextField label="Nome" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Aluguel, academia, streaming..." autoFocus />
+        <TextField label="Nome" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Aluguel, academia, streaming…" autoFocus />
         <div className="flex gap-3">
           <TextField label="Dia do vencimento" type="number" inputMode="numeric" min={1} max={31} value={dueDay} onChange={(e) => setDueDay(e.target.value)} className="flex-1" />
           <TextField label="Valor" type="number" inputMode="decimal" step="0.01" value={value} onChange={(e) => setValue(e.target.value)} className="flex-1" />

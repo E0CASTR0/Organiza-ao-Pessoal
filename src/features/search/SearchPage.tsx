@@ -47,7 +47,7 @@ export function SearchPage() {
     <div className="reveal flex flex-col gap-5">
       <BackHeader title="Mais" to="/mais" />
       <PageHeader title="Buscar" icon={<SearchIcon width={20} height={20} />} />
-      <TextField value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar em compras, prioridades, tarefas, contas, dietas, notas..." autoFocus />
+      <TextField value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar em compras, prioridades, tarefas, contas, dietas, notas…" autoFocus />
 
       {query.trim() && results.length === 0 && <EmptyState title="Nada encontrado" description="Tente outro termo de busca." />}
 

@@ -129,3 +129,27 @@ export async function totalReturnAllTime(): Promise<number> {
   const all = await db.investmentReturns.toArray()
   return all.reduce((sum, r) => sum + r.value, 0)
 }
+
+export interface MonthTotal {
+  month: string // 'AAAA-MM'
+  total: number
+}
+
+/** Total de retornos de cada um dos últimos `count` meses (o mais antigo primeiro; meses sem
+ * lançamento entram com 0) — alimenta o gráfico da tela de Investimentos. */
+export async function monthlyReturnTotals(count = 6): Promise<MonthTotal[]> {
+  const all = await db.investmentReturns.toArray()
+  const totals = new Map<string, number>()
+  for (const entry of all) totals.set(entry.month, (totals.get(entry.month) ?? 0) + entry.value)
+
+  const result: MonthTotal[] = []
+  const cursor = new Date()
+  cursor.setDate(1)
+  cursor.setMonth(cursor.getMonth() - (count - 1))
+  for (let i = 0; i < count; i++) {
+    const key = `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, '0')}`
+    result.push({ month: key, total: totals.get(key) ?? 0 })
+    cursor.setMonth(cursor.getMonth() + 1)
+  }
+  return result
+}
