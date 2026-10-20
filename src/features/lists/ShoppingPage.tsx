@@ -28,7 +28,7 @@ export function ShoppingPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="reveal flex flex-col gap-4">
       {items.length > 0 && (
         <Card className="flex items-center justify-between p-4">
           <p className="text-sm text-[var(--text-secondary)]">Total da lista</p>
@@ -44,10 +44,10 @@ export function ShoppingPage() {
       {items.length === 0 ? (
         <EmptyState title="Sua lista está vazia" description="Adicione produtos com foto, nome e valor." />
       ) : (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="reveal grid grid-cols-2 gap-3">
           {items.map((item) => (
             <Card key={item.id} className="overflow-hidden">
-              <button type="button" onClick={() => openEdit(item)} className="block w-full text-left">
+              <button type="button" onClick={() => openEdit(item)} className="press block w-full text-left">
                 <div className="aspect-square w-full bg-[var(--bg-elevated-2)]">
                   {item.imageBase64 ? (
                     <img src={item.imageBase64} alt={item.name} className="h-full w-full object-cover" />
@@ -61,7 +61,7 @@ export function ShoppingPage() {
                 </div>
               </button>
               <div className="flex items-center justify-between border-t border-[var(--border-subtle)] px-3 py-2.5">
-                <Checkbox checked={item.bought} onChange={() => void toggleBought(item.id)} label={item.bought ? 'Comprado' : 'Não comprado'} />
+                <Checkbox strike={false} checked={item.bought} onChange={() => void toggleBought(item.id)} label={item.bought ? 'Comprado' : 'Não comprado'} />
               </div>
             </Card>
           ))}

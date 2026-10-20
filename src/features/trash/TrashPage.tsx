@@ -31,7 +31,7 @@ export function TrashPage() {
   const items = useLiveQuery(() => listTrash(), []) ?? []
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="reveal flex flex-col gap-5">
       <BackHeader title="Configurações" to="/mais/configuracoes" />
       <PageHeader
         title="Lixeira"
@@ -49,7 +49,7 @@ export function TrashPage() {
       {items.length === 0 ? (
         <EmptyState title="Lixeira vazia" description="Nada foi excluído ainda." />
       ) : (
-        <div className="flex flex-col gap-2.5">
+        <div className="reveal flex flex-col gap-2.5">
           {items.map((item) => (
             <Card key={item.id} className="flex items-center justify-between gap-3 p-3.5">
               <div className="min-w-0">

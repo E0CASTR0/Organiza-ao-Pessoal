@@ -16,10 +16,13 @@ export function ListsLayout() {
   const current = segments.find((s) => location.pathname.endsWith(s.value))?.value ?? 'prioridades'
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="reveal flex flex-col gap-5">
       <PageHeader title="Listas" icon={<ListIcon width={20} height={20} />} />
       <SegmentedControl segments={segments} value={current} onChange={(v) => navigate(`/listas/${v}`)} />
-      <Outlet />
+      {/* a sub-aba tem a própria entrada (reveal na raiz dela, que reaparece a cada troca) */}
+      <div data-no-reveal>
+        <Outlet />
+      </div>
     </div>
   )
 }

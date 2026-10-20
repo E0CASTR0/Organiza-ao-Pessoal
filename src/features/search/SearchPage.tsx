@@ -44,7 +44,7 @@ export function SearchPage() {
   }, [query]) ?? []
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="reveal flex flex-col gap-5">
       <BackHeader title="Mais" to="/mais" />
       <PageHeader title="Buscar" icon={<SearchIcon width={20} height={20} />} />
       <TextField value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar em compras, prioridades, tarefas, contas, dietas, notas..." autoFocus />
@@ -53,7 +53,7 @@ export function SearchPage() {
 
       <div className="flex flex-col gap-2">
         {results.map((result) => (
-          <Card key={`${result.section}-${result.id}`} className="cursor-pointer p-3.5" onClick={() => navigate(result.to)}>
+          <Card key={`${result.section}-${result.id}`} className="item-in p-3.5" onClick={() => navigate(result.to)}>
             <p className="font-medium text-[var(--text-primary)]">{result.title}</p>
             <p className="text-xs text-[var(--text-tertiary)]">{result.section}</p>
           </Card>

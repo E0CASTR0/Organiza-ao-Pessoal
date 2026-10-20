@@ -1,16 +1,12 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { prefersReducedMotion } from '@/utils/motion'
+import { TAB_ORDER, currentTabIndex } from './tabs'
 
-const TAB_ORDER = ['/', '/agenda', '/listas', '/rotina', '/mais']
 const SWIPE_THRESHOLD_PX = 90 // arrasto mínimo pra contar como "troca de aba de propósito"
 const COMMIT_PX = 12 // quanto precisa mover antes de decidir se o gesto é horizontal ou vertical
 const ANIM_MS = 220
-
-function currentTabIndex(pathname: string): number {
-  const sorted = [...TAB_ORDER].sort((a, b) => b.length - a.length)
-  const match = sorted.find((tab) => (tab === '/' ? pathname === '/' : pathname.startsWith(tab)))
-  return TAB_ORDER.indexOf(match ?? '/')
-}
+const TAP_SLIDE_PX = 28 // quanto o conteúdo "escorrega" ao trocar de aba tocando na barra de baixo
 
 interface Gesture {
   startX: number
@@ -32,10 +28,33 @@ export function SwipeView({ children }: { children: ReactNode }) {
   const gestureRef = useRef<Gesture | null>(null)
   const dragXRef = useRef(0)
   const indexRef = useRef(currentTabIndex(location.pathname))
+  const prevIndexRef = useRef(currentTabIndex(location.pathname))
+  const swipeNavRef = useRef(false) // true quando a troca de rota veio do arrasto (que já tem a própria animação)
 
   useEffect(() => {
     dragXRef.current = dragX
   }, [dragX])
+
+  // Trocou de aba tocando na barra de baixo (não arrastando): o conteúdo novo escorrega pra
+  // dentro vindo do lado de onde a aba está, na mesma curva do arrasto. Layout effect pra a
+  // animação começar antes do primeiro quadro pintado (senão a tela nova piscaria no lugar).
+  useLayoutEffect(() => {
+    const nextIndex = currentTabIndex(location.pathname)
+    const prevIndex = prevIndexRef.current
+    prevIndexRef.current = nextIndex
+
+    if (swipeNavRef.current) {
+      swipeNavRef.current = false
+      return
+    }
+    if (nextIndex === prevIndex || prefersReducedMotion()) return
+
+    const dir = nextIndex > prevIndex ? 1 : -1
+    wrapperRef.current?.animate(
+      [{ transform: `translate3d(${dir * TAP_SLIDE_PX}px, 0, 0)` }, { transform: 'translate3d(0, 0, 0)' }],
+      { duration: 320, easing: 'cubic-bezier(0.32, 0.72, 0, 1)' },
+    )
+  }, [location.pathname])
 
   // se a rota mudou (por um arrasto que completou, ou por outro caminho — ex: tocou na
   // barra de baixo), mantém o índice/ref em dia e garante que não sobrou arrasto residual
@@ -102,6 +121,7 @@ export function SwipeView({ children }: { children: ReactNode }) {
           setAnimating(true)
           setDragX(exitX)
           window.setTimeout(() => {
+            swipeNavRef.current = true
             navigate(TAB_ORDER[nextIndex])
             // o conteúdo novo "chega" da mesma borda pra onde o anterior saiu — teleporta
             // sem transição pro ponto de partida e, no quadro seguinte, anima até o centro

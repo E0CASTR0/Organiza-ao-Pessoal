@@ -2,9 +2,11 @@ import { useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { TrashIcon, PlusIcon } from '@/components/ui/icons'
 import { Button } from '@/components/ui/Button'
+import { IconButton } from '@/components/ui/IconButton'
 import { addInvestmentReturn, listReturnsByInvestmentAndMonth, removeInvestmentReturn } from '@/db/repositories/investments.repo'
 import { currentMonthKey, formatMonthLabel } from '@/utils/date'
 import { formatCurrency } from '@/utils/currency'
+import { removeAnimated } from '@/utils/motion'
 
 /** Lançamentos de retorno do mês atual pra um investimento — em vez de um campo único que
  * se sobrescreve, cada "adicionar" soma. Reinicia sozinho todo dia 1 (o mês novo ainda não
@@ -30,13 +32,13 @@ export function InvestmentReturnLog({ investmentId }: { investmentId: string }) 
       </div>
 
       {entries.length > 0 && (
-        <div className="mt-2 flex flex-col gap-1">
+        <div className="mt-1 flex flex-col">
           {entries.map((entry) => (
-            <div key={entry.id} className="flex items-center justify-between gap-2">
+            <div key={entry.id} data-row className="item-in flex min-h-9 items-center justify-between gap-2">
               <span className="text-sm text-[var(--text-primary)]">{formatCurrency(entry.value)}</span>
-              <button type="button" onClick={() => void removeInvestmentReturn(entry.id)} aria-label="Remover lançamento" className="text-[var(--text-tertiary)] hover:text-[var(--danger)]">
+              <IconButton label="Remover lançamento" tone="danger" onClick={(e) => void removeAnimated(e.currentTarget, () => removeInvestmentReturn(entry.id))}>
                 <TrashIcon width={13} height={13} />
-              </button>
+              </IconButton>
             </div>
           ))}
         </div>

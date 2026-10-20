@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import './theme/theme.css';
+@import './theme/motion.css';
 
 /* As fontes (@fontsource) são importadas em main.tsx, não aqui — o bundler do Tailwind v4
    não resolve/copia corretamente os arquivos woff2 referenciados via @import dentro do CSS. */

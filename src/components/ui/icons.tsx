@@ -81,6 +81,14 @@ export function TrashIcon(props: IconProps) {
   )
 }
 
+export function CloseIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" />
+    </svg>
+  )
+}
+
 export function ChevronLeftIcon(props: IconProps) {
   return (
     <svg {...base} {...props}>

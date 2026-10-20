@@ -4,6 +4,7 @@ import { BackHeader } from '@/components/layout/BackHeader'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
+import { IconButton } from '@/components/ui/IconButton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { PlusIcon, TrashIcon, WalletIcon } from '@/components/ui/icons'
 import { listCategories, listInvestments, listReturnsByMonth, totalReturnAllTime, removeCategory } from '@/db/repositories/investments.repo'
@@ -50,7 +51,7 @@ export function InvestmentsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="reveal flex flex-col gap-5">
       <BackHeader title="Mais" to="/mais" />
       <PageHeader
         title="Investimentos"
@@ -63,7 +64,7 @@ export function InvestmentsPage() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="reveal grid grid-cols-2 gap-3">
         <Card className="p-4">
           <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">Total investido</p>
           <p className="mt-1 font-[var(--font-heading)] text-xl text-[var(--text-primary)]">{formatCurrency(totalInvested)}</p>
@@ -87,25 +88,26 @@ export function InvestmentsPage() {
             <section key={category.id}>
               <div className="mb-2.5 flex items-center justify-between">
                 <h2 className="text-sm font-medium uppercase tracking-wide text-[var(--text-tertiary)]">{category.name}</h2>
-                <div className="flex items-center gap-3">
-                  <button onClick={() => openNew(category.id)} className="text-[var(--accent)] hover:text-[var(--accent-strong)]" aria-label="Adicionar investimento">
+                {/* 24 px entre os ícones: as áreas de toque ampliadas (IconButton) não se sobrepõem */}
+                <div className="flex items-center gap-6">
+                  <IconButton label="Adicionar investimento" tone="accent" onClick={() => openNew(category.id)}>
                     <PlusIcon width={16} height={16} />
-                  </button>
+                  </IconButton>
                   {items.length === 0 && (
-                    <button onClick={() => void handleRemoveCategory(category.id)} className="text-[var(--text-tertiary)] hover:text-[var(--danger)]" aria-label="Remover categoria">
+                    <IconButton label="Remover categoria" tone="danger" onClick={() => void handleRemoveCategory(category.id)}>
                       <TrashIcon width={14} height={14} />
-                    </button>
+                    </IconButton>
                   )}
                 </div>
               </div>
               {items.length === 0 ? (
-                <p className="text-sm text-[var(--text-tertiary)]">Nenhum investimento nessa categoria.</p>
+                <p className="empty-fade text-sm text-[var(--text-tertiary)]">Nenhum investimento nessa categoria.</p>
               ) : (
-                <div className="flex flex-col gap-2.5">
+                <div className="reveal flex flex-col gap-2.5">
                   {items.map((investment) => {
                     const returnThisMonth = returnThisMonthFor(investment.id)
                     return (
-                      <Card key={investment.id} className="cursor-pointer p-3.5" onClick={() => openEdit(investment)}>
+                      <Card key={investment.id} className="p-3.5" onClick={() => openEdit(investment)}>
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <p className="truncate font-medium text-[var(--text-primary)]">

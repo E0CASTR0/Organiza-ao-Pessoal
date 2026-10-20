@@ -2,11 +2,13 @@ import { useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
+import { IconButton } from '@/components/ui/IconButton'
 import { TextField } from '@/components/ui/TextField'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TrashIcon, PlusIcon } from '@/components/ui/icons'
 import { listWorkoutDays, renameWorkoutDay, listExercisesByDay, removeExercise } from '@/db/repositories/workout.repo'
 import { WEEKDAY_SHORT, toWeekdayIndex } from '@/utils/date'
+import { removeAnimated } from '@/utils/motion'
 import { ExerciseFormModal } from './ExerciseFormModal'
 import type { Exercise } from '@/db/models'
 
@@ -44,13 +46,13 @@ export function WorkoutPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="reveal flex flex-col gap-4">
       <div data-hscroll className="flex gap-1.5 overflow-x-auto pb-1">
         {WEEKDAY_SHORT.map((label, weekday) => (
           <button
             key={weekday}
             onClick={() => setSelectedWeekday(weekday)}
-            className={`shrink-0 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors ${
+            className={`press shrink-0 rounded-full border px-3.5 py-1.5 text-sm font-medium ${
               selectedWeekday === weekday
                 ? 'border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-contrast)]'
                 : 'border-[var(--border-default)] text-[var(--text-secondary)]'
@@ -78,7 +80,7 @@ export function WorkoutPage() {
                 </Button>
               </form>
             ) : (
-              <button onClick={startRenaming} className="text-left">
+              <button onClick={startRenaming} className="press text-left">
                 <p className="font-[var(--font-heading)] text-lg text-[var(--text-primary)]">{currentDay.label}</p>
                 <p className="text-xs text-[var(--text-tertiary)]">Toque para renomear</p>
               </button>
@@ -90,9 +92,9 @@ export function WorkoutPage() {
       {exercises.length === 0 ? (
         <EmptyState title="Nenhum exercício neste dia" description="Adicione os exercícios do treino." />
       ) : (
-        <div className="flex flex-col gap-2.5">
+        <div key={selectedWeekday} className="reveal flex flex-col gap-2.5">
           {exercises.map((exercise) => (
-            <Card key={exercise.id} className="cursor-pointer p-3.5" onClick={() => openEdit(exercise)}>
+            <Card key={exercise.id} data-row className="p-3.5" onClick={() => openEdit(exercise)}>
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <p className="font-medium text-[var(--text-primary)]">{exercise.name}</p>
@@ -102,16 +104,16 @@ export function WorkoutPage() {
                   </p>
                   {exercise.notes && <p className="mt-0.5 text-xs text-[var(--text-tertiary)]">{exercise.notes}</p>}
                 </div>
-                <button
+                <IconButton
+                  label="Remover exercício"
+                  tone="danger"
                   onClick={(e) => {
                     e.stopPropagation()
-                    void removeExercise(exercise.id)
+                    void removeAnimated(e.currentTarget, () => removeExercise(exercise.id))
                   }}
-                  aria-label="Remover exercício"
-                  className="shrink-0 text-[var(--text-tertiary)] hover:text-[var(--danger)]"
                 >
                   <TrashIcon width={16} height={16} />
-                </button>
+                </IconButton>
               </div>
             </Card>
           ))}

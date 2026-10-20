@@ -12,7 +12,7 @@ export function SettingsPage() {
   const { theme, toggleTheme } = useTheme()
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="reveal flex flex-col gap-5">
       <BackHeader title="Mais" to="/mais" />
       <PageHeader title="Configurações" icon={<SettingsIcon width={20} height={20} />} />
 
@@ -24,7 +24,7 @@ export function SettingsPage() {
         <Toggle checked={theme === 'dark'} onChange={toggleTheme} aria-label="Alternar tema" />
       </Card>
 
-      <Link to="/mais/lixeira" className="flex items-center justify-between rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--bg-elevated-1)] p-4 hover:bg-[var(--bg-elevated-2)]">
+      <Link to="/mais/lixeira" className="press flex items-center justify-between rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--bg-elevated-1)] p-4 hover:bg-[var(--bg-elevated-2)]">
         <div className="flex items-center gap-3">
           <TrashIcon width={18} height={18} className="text-[var(--text-secondary)]" />
           <p className="font-medium text-[var(--text-primary)]">Lixeira</p>

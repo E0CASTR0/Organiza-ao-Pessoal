@@ -24,7 +24,7 @@ export function DietPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="reveal flex flex-col gap-4">
       <Button onClick={openNew} className="self-end">
         <PlusIcon width={16} height={16} />
         Nova dieta
@@ -33,7 +33,7 @@ export function DietPage() {
       {diets.length === 0 ? (
         <EmptyState title="Nenhuma dieta cadastrada" description="Crie uma dieta com título e descrição da alimentação." />
       ) : (
-        <div className="flex flex-col gap-2.5">
+        <div className="reveal flex flex-col gap-2.5">
           {diets.map((diet) => (
             <Card key={diet.id} className={`p-4 ${diet.isActive ? 'border-[var(--accent)]' : ''}`}>
               <div className="flex items-start justify-between gap-3">
@@ -49,7 +49,7 @@ export function DietPage() {
                 ) : (
                   <button
                     onClick={() => void setActiveDiet(diet.id)}
-                    className="shrink-0 rounded-full border border-[var(--border-default)] px-2.5 py-1 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                    className="press shrink-0 rounded-full border border-[var(--border-default)] px-3 py-1.5 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                   >
                     Ativar
                   </button>

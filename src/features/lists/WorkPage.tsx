@@ -3,11 +3,13 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { Card } from '@/components/ui/Card'
 import { Checkbox } from '@/components/ui/Checkbox'
 import { Button } from '@/components/ui/Button'
+import { IconButton } from '@/components/ui/IconButton'
 import { TextField } from '@/components/ui/TextField'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TrashIcon, PlusIcon } from '@/components/ui/icons'
 import { listWorkTasks, addWorkTask, toggleWorkTask, removeWorkTask } from '@/db/repositories/workTasks.repo'
 import { formatDateShort } from '@/utils/date'
+import { removeAnimated } from '@/utils/motion'
 
 export function WorkPage() {
   const [title, setTitle] = useState('')
@@ -21,7 +23,7 @@ export function WorkPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="reveal flex flex-col gap-4">
       <Card className="p-4">
         <form
           className="flex gap-2"
@@ -40,15 +42,16 @@ export function WorkPage() {
       {tasks.length === 0 ? (
         <EmptyState title="Nenhuma tarefa de trabalho" description="Organize pendências e projetos por aqui." />
       ) : (
-        <div className="flex flex-col gap-2.5">
+        // reveal: as tarefas entram em sequência ao abrir a aba e cada tarefa nova também aparece animada
+        <div className="reveal flex flex-col gap-2.5">
           {tasks.map((task) => (
-            <Card key={task.id} className="flex items-center justify-between gap-2 p-3.5">
-              <Checkbox checked={task.completed} onChange={() => void toggleWorkTask(task.id)} label={task.title} />
+            <Card key={task.id} data-row className="flex items-center justify-between gap-2 p-3.5">
+              <Checkbox className="self-stretch" checked={task.completed} onChange={() => void toggleWorkTask(task.id)} label={task.title} />
               <div className="flex shrink-0 items-center gap-2.5">
                 {task.dueDate && <span className="text-xs text-[var(--text-tertiary)]">{formatDateShort(task.dueDate)}</span>}
-                <button onClick={() => void removeWorkTask(task.id)} aria-label="Remover" className="text-[var(--text-tertiary)] hover:text-[var(--danger)]">
+                <IconButton label="Remover" tone="danger" onClick={(e) => void removeAnimated(e.currentTarget, () => removeWorkTask(task.id))}>
                   <TrashIcon width={16} height={16} />
-                </button>
+                </IconButton>
               </div>
             </Card>
           ))}

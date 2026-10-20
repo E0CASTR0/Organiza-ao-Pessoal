@@ -25,7 +25,7 @@ export function NotesPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="reveal flex flex-col gap-4">
       <Button onClick={openNew} className="self-end">
         <PlusIcon width={16} height={16} />
         Nova nota
@@ -34,9 +34,9 @@ export function NotesPage() {
       {notes.length === 0 ? (
         <EmptyState title="Nenhuma anotação ainda" description="Um bloco de notas livre pra lembretes e ideias soltas." />
       ) : (
-        <div className="flex flex-col gap-2.5">
+        <div className="reveal flex flex-col gap-2.5">
           {notes.map((note) => (
-            <Card key={note.id} className="cursor-pointer p-3.5" onClick={() => openEdit(note)}>
+            <Card key={note.id} className="p-3.5" onClick={() => openEdit(note)}>
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium text-[var(--text-primary)]">{note.title}</p>

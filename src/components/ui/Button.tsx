@@ -28,7 +28,7 @@ const sizeClasses: Record<Size, string> = {
 export function Button({ variant = 'primary', size = 'md', className = '', children, ...rest }: ButtonProps) {
   return (
     <button
-      className={`inline-flex items-center justify-center font-medium transition-colors duration-150 whitespace-nowrap select-none disabled:cursor-not-allowed ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+      className={`press inline-flex items-center justify-center font-medium whitespace-nowrap select-none disabled:cursor-not-allowed ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
       {...rest}
     >
       {children}

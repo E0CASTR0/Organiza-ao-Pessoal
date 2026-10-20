@@ -15,7 +15,7 @@ export function HubGrid({ tiles }: { tiles: HubTile[] }) {
         <Link
           key={to}
           to={to}
-          className="flex flex-col gap-3 rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--bg-elevated-1)] p-4 transition-colors hover:bg-[var(--bg-elevated-2)]"
+          className="press flex flex-col gap-3 rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--bg-elevated-1)] p-4 hover:bg-[var(--bg-elevated-2)]"
         >
           <span className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--bg-elevated-3)] text-[var(--accent)]">
             <Icon width={20} height={20} />

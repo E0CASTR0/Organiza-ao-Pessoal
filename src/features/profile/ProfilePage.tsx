@@ -30,7 +30,7 @@ export function ProfilePage() {
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="reveal flex flex-col gap-5">
       <BackHeader title="Mais" to="/mais" />
       <PageHeader title="Perfil" icon={<UserIcon width={20} height={20} />} />
 

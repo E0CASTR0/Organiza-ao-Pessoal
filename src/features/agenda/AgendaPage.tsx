@@ -3,6 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
+import { IconButton } from '@/components/ui/IconButton'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ChevronLeftIcon, ChevronRightIcon, PlusIcon, CalendarIcon } from '@/components/ui/icons'
@@ -38,7 +39,7 @@ export function AgendaPage() {
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="reveal flex flex-col gap-5">
       <PageHeader
         title="Agenda"
         icon={<CalendarIcon width={20} height={20} />}
@@ -61,29 +62,31 @@ export function AgendaPage() {
       {view === 'day' ? (
         <>
           <div className="flex items-center justify-between">
-            <button onClick={() => setAnchor((d) => addDays(d, -1))} className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)]" aria-label="Dia anterior">
+            <IconButton label="Dia anterior" onClick={() => setAnchor((d) => addDays(d, -1))}>
               <ChevronLeftIcon width={20} height={20} />
-            </button>
+            </IconButton>
             <div className="text-center">
               <p className="text-xs font-medium uppercase tracking-wide text-[var(--text-tertiary)]">{WEEKDAY_LABELS[toWeekdayIndex(anchor)]}</p>
               <p className="font-medium text-[var(--text-primary)]">{formatDateLong(dateKey)}</p>
               {dateKey !== todayKey() && (
-                <button onClick={() => setAnchor(new Date())} className="text-xs text-[var(--accent)]">
+                <button onClick={() => setAnchor(new Date())} className="press text-xs text-[var(--accent)]">
                   Voltar para hoje
                 </button>
               )}
             </div>
-            <button onClick={() => setAnchor((d) => addDays(d, 1))} className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)]" aria-label="Próximo dia">
+            <IconButton label="Próximo dia" onClick={() => setAnchor((d) => addDays(d, 1))}>
               <ChevronRightIcon width={20} height={20} />
-            </button>
+            </IconButton>
           </div>
 
-          {dayEvents.length === 0 ? (
-            <EmptyState title="Nenhum evento neste dia" description="Toque no + para adicionar um compromisso." />
-          ) : (
-            <div className="flex flex-col gap-2.5">
-              {dayEvents.map((event) => (
-                <Card key={event.id} className="cursor-pointer p-3.5" onClick={() => openEdit(event)}>
+          {/* key={dateKey}: a cada dia a lista é remontada e os cartões entram de novo, um
+              depois do outro — trocar de dia ganha movimento em vez de "trocar o texto" */}
+          <div key={dateKey} className="reveal flex flex-col gap-2.5">
+            {dayEvents.length === 0 ? (
+              <EmptyState title="Nenhum evento neste dia" description="Toque no + para adicionar um compromisso." />
+            ) : (
+              dayEvents.map((event) => (
+                <Card key={event.id} className="p-3.5" onClick={() => openEdit(event)}>
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="font-medium text-[var(--text-primary)]">{event.title}</p>
@@ -92,50 +95,52 @@ export function AgendaPage() {
                     <span className="shrink-0 text-sm text-[var(--text-secondary)]">{event.time ?? 'Dia inteiro'}</span>
                   </div>
                 </Card>
-              ))}
-            </div>
-          )}
+              ))
+            )}
+          </div>
         </>
       ) : (
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <button onClick={() => setAnchor((d) => addDays(d, -7))} className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)]" aria-label="Semana anterior">
+            <IconButton label="Semana anterior" onClick={() => setAnchor((d) => addDays(d, -7))}>
               <ChevronLeftIcon width={20} height={20} />
-            </button>
+            </IconButton>
             <p className="text-sm font-medium text-[var(--text-primary)]">
               {formatDateShort(weekStartKey)} – {formatDateShort(weekEndKey)}
             </p>
-            <button onClick={() => setAnchor((d) => addDays(d, 7))} className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)]" aria-label="Próxima semana">
+            <IconButton label="Próxima semana" onClick={() => setAnchor((d) => addDays(d, 7))}>
               <ChevronRightIcon width={20} height={20} />
-            </button>
+            </IconButton>
           </div>
 
-          {Array.from({ length: 7 }, (_, i) => addDays(weekStart, i)).map((day) => {
-            const key = toDateKey(day)
-            const events = weekEvents.filter((e) => e.date === key)
-            return (
-              <div key={key}>
-                <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-[var(--text-tertiary)]">
-                  {WEEKDAY_SHORT[toWeekdayIndex(day)]} · {formatDateShort(key)}
-                  {key === todayKey() && <span className="ml-1.5 text-[var(--accent)]">· hoje</span>}
-                </p>
-                {events.length === 0 ? (
-                  <p className="pl-0.5 text-sm text-[var(--text-tertiary)]">—</p>
-                ) : (
-                  <div className="flex flex-col gap-1.5">
-                    {events.map((event) => (
-                      <Card key={event.id} className="cursor-pointer p-2.5" onClick={() => openEdit(event)}>
-                        <div className="flex items-center justify-between gap-2">
-                          <p className="truncate text-sm font-medium text-[var(--text-primary)]">{event.title}</p>
-                          <span className="shrink-0 text-xs text-[var(--text-tertiary)]">{event.time ?? 'Dia inteiro'}</span>
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )
-          })}
+          <div key={weekStartKey} className="reveal flex flex-col gap-4">
+            {Array.from({ length: 7 }, (_, i) => addDays(weekStart, i)).map((day) => {
+              const key = toDateKey(day)
+              const events = weekEvents.filter((e) => e.date === key)
+              return (
+                <div key={key}>
+                  <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-[var(--text-tertiary)]">
+                    {WEEKDAY_SHORT[toWeekdayIndex(day)]} · {formatDateShort(key)}
+                    {key === todayKey() && <span className="ml-1.5 text-[var(--accent)]">· hoje</span>}
+                  </p>
+                  {events.length === 0 ? (
+                    <p className="pl-0.5 text-sm text-[var(--text-tertiary)]">—</p>
+                  ) : (
+                    <div className="flex flex-col gap-1.5">
+                      {events.map((event) => (
+                        <Card key={event.id} className="p-2.5" onClick={() => openEdit(event)}>
+                          <div className="flex items-center justify-between gap-2">
+                            <p className="truncate text-sm font-medium text-[var(--text-primary)]">{event.title}</p>
+                            <span className="shrink-0 text-xs text-[var(--text-tertiary)]">{event.time ?? 'Dia inteiro'}</span>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
         </div>
       )}
 

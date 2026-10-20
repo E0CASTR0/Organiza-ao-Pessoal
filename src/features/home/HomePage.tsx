@@ -8,7 +8,9 @@ import { Button } from '@/components/ui/Button'
 import { TextField } from '@/components/ui/TextField'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TrashIcon, CalendarIcon, ReceiptIcon, PlusIcon, GripIcon } from '@/components/ui/icons'
+import { IconButton } from '@/components/ui/IconButton'
 import { ReorderableList } from '@/components/ui/ReorderableList'
+import { removeAnimated } from '@/utils/motion'
 import { listGoals, listCompletionsByDate, addGoal, toggleGoalForDate, removeGoal, reorderGoals } from '@/db/repositories/dailyGoals.repo'
 import { listEventsByDate } from '@/db/repositories/events.repo'
 import { listFixedBills } from '@/db/repositories/fixedBills.repo'
@@ -53,8 +55,8 @@ export function HomePage() {
   const greetingName = profile?.nickname || profile?.displayName
 
   return (
-    <div className="flex flex-col gap-6">
-      <Link to="/mais/perfil" className="mb-1 flex items-center gap-3">
+    <div className="reveal flex flex-col gap-6">
+      <Link to="/mais/perfil" className="press mb-1 flex items-center gap-3">
         <Avatar photoBase64={profile?.photoBase64} size={52} />
         <div>
           <h1 className="font-[var(--font-heading)] text-2xl font-semibold text-[var(--text-primary)]">
@@ -68,32 +70,32 @@ export function HomePage() {
         <h2 className="mb-2.5 text-sm font-medium uppercase tracking-wide text-[var(--text-tertiary)]">Metas de hoje</h2>
         <Card className="p-4">
           <div className="flex flex-col gap-3">
-            {goals.length === 0 && <p className="text-sm text-[var(--text-tertiary)]">Nenhuma meta adicionada ainda.</p>}
+            {goals.length === 0 && <p className="empty-fade text-sm text-[var(--text-tertiary)]">Nenhuma meta adicionada ainda.</p>}
             {goals.length > 0 && (
               <ReorderableList
                 items={goals}
-                rowHeight={44}
+                rowHeight={46}
+                gapClass="gap-0.5"
                 onReorder={(ids) => void reorderGoals(ids)}
                 renderItem={(goal, dragHandle, dragging) => (
-                  <div className={`flex items-center justify-between gap-2 rounded-[var(--radius-sm)] ${dragging ? 'bg-[var(--bg-elevated-2)] shadow-[0_4px_12px_var(--shadow)]' : ''}`}>
+                  // linha de 44 px (o mínimo confortável pro dedo): o Checkbox ocupa a altura toda
+                  // e a lixeira/alça têm área de toque ampliada (IconButton). O vão de 24 px entre
+                  // os dois ícones evita que as áreas de toque se sobreponham.
+                  <div className={`flex min-h-11 items-center justify-between gap-2 rounded-[var(--radius-sm)] ${dragging ? 'bg-[var(--bg-elevated-2)] shadow-[0_6px_18px_var(--shadow)]' : ''}`}>
                     <Checkbox
+                      className="self-stretch"
                       checked={isGoalDone(goal.id)}
                       onChange={() => void toggleGoalForDate(goal.id, today)}
                       label={goal.title}
                     />
-                    <div className="flex shrink-0 items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => void removeGoal(goal.id)}
-                        aria-label="Remover meta"
-                        className="p-1 text-[var(--text-tertiary)] hover:text-[var(--danger)]"
-                      >
+                    <div className="flex shrink-0 items-center gap-6">
+                      <IconButton label="Remover meta" tone="danger" onClick={(e) => void removeAnimated(e.currentTarget, () => removeGoal(goal.id))}>
                         <TrashIcon width={16} height={16} />
-                      </button>
+                      </IconButton>
                       <span
                         {...dragHandle}
                         aria-label="Arrastar pra reordenar"
-                        className="touch-none p-1 text-[var(--text-tertiary)]"
+                        className="-m-3 touch-none p-3 text-[var(--text-tertiary)]"
                       >
                         <GripIcon width={18} height={18} />
                       </span>
@@ -148,7 +150,7 @@ export function HomePage() {
         ) : (
           <div className="flex flex-col gap-2.5">
             {todayEvents.map((event) => (
-              <Card key={event.id} className="flex items-center gap-3 p-3.5">
+              <Card key={event.id} className="item-in flex items-center gap-3 p-3.5">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--bg-elevated-3)] text-[var(--accent)]">
                   <CalendarIcon width={18} height={18} />
                 </span>
@@ -159,7 +161,7 @@ export function HomePage() {
               </Card>
             ))}
             {upcomingBills.map((bill) => (
-              <Card key={bill.id} className="flex items-center gap-3 p-3.5">
+              <Card key={bill.id} className="item-in flex items-center gap-3 p-3.5">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-elevated-3)] text-[var(--accent)]">
                   {bill.imageBase64 ? <img src={bill.imageBase64} alt="" className="h-full w-full object-cover" /> : <ReceiptIcon width={18} height={18} />}
                 </span>

@@ -39,7 +39,9 @@
 
   --text-primary: #f3f2ee;
   --text-secondary: #a6a49c;
-  --text-tertiary: #6f6d66;
+  /* era #6f6d66 (contraste 3,5:1 nos cartões — difícil de ler ao sol); #8e8c84 dá 5,4:1,
+     acima dos 4,5:1 recomendados, e continua claramente mais apagado que o secundário */
+  --text-tertiary: #8e8c84;
 
   --accent: #c7c3b8;
   --accent-strong: #ece9e0;
@@ -70,7 +72,8 @@
 
   --text-primary: #1b1a17;
   --text-secondary: #58554c;
-  --text-tertiary: #8b8779;
+  /* era #8b8779 (3,3:1 no fundo claro); #6f6b5e dá 4,9:1 */
+  --text-tertiary: #6f6b5e;
 
   --accent: #4a463c;
   --accent-strong: #24221d;

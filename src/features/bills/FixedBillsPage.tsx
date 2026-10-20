@@ -39,7 +39,7 @@ export function FixedBillsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="reveal flex flex-col gap-5">
       <BackHeader title="Mais" to="/mais" />
       <PageHeader
         title="Contas Fixas"
@@ -53,7 +53,7 @@ export function FixedBillsPage() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="reveal grid grid-cols-2 gap-3">
         <Card className="p-4">
           <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">Total do mês</p>
           <p className="mt-1 font-[var(--font-heading)] text-xl text-[var(--text-primary)]">{formatCurrency(totalMonth)}</p>
@@ -67,13 +67,15 @@ export function FixedBillsPage() {
       {activeBills.length === 0 ? (
         <EmptyState title="Nenhuma conta fixa cadastrada" description="Adicione contas recorrentes com dia de vencimento e valor." />
       ) : (
-        <div className="flex flex-col gap-2.5">
+        <div className="reveal flex flex-col gap-2.5">
           {activeBills
             .slice()
             .sort((a, b) => a.dueDay - b.dueDay)
             .map((bill) => (
               <Card key={bill.id} className="flex items-center justify-between gap-3 p-3.5">
-                <Checkbox checked={isPaid(bill)} onChange={() => void togglePaid(bill.id, cycleKeyFor(bill))} />
+                {/* sem texto, a caixinha de 20 px sozinha é difícil de acertar: -m-3/p-3 amplia a
+                    área de toque sem mudar o layout */}
+                <Checkbox className="-m-3 p-3" aria-label={`Marcar ${bill.name} como paga`} checked={isPaid(bill)} onChange={() => void togglePaid(bill.id, cycleKeyFor(bill))} />
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-[var(--radius-sm)] bg-[var(--bg-elevated-3)] text-[var(--accent)]">
                   {bill.imageBase64 ? <img src={bill.imageBase64} alt="" className="h-full w-full object-cover" /> : <ReceiptIcon width={18} height={18} />}
                 </span>

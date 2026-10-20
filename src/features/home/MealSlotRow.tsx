@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Button } from '@/components/ui/Button'
+import { IconButton } from '@/components/ui/IconButton'
 import { TrashIcon, PlusIcon } from '@/components/ui/icons'
 import { listItemsByDietAndMeal, addMealItem, removeMealItem } from '@/db/repositories/dietMealItems.repo'
 import { MEAL_SLOT_LABELS } from '@/utils/mealSlots'
+import { removeAnimated } from '@/utils/motion'
 import type { MealSlotKey } from '@/db/models'
 
 export function MealSlotRow({ dietId, meal }: { dietId: string; meal: MealSlotKey }) {
@@ -29,15 +31,16 @@ export function MealSlotRow({ dietId, meal }: { dietId: string; meal: MealSlotKe
       </div>
 
       {items.length > 0 && (
-        <div className="mt-1.5 flex flex-col gap-1">
+        <div className="mt-1 flex flex-col">
+          {/* linhas de 36 px: a lixeira ampliada (IconButton) cabe na linha sem invadir a vizinha */}
           {items.map((item) => (
-            <div key={item.id} className="flex items-center justify-between gap-2">
+            <div key={item.id} data-row className="item-in flex min-h-9 items-center justify-between gap-2">
               <span className="truncate text-sm text-[var(--text-primary)]">{item.name}</span>
               <div className="flex shrink-0 items-center gap-2">
                 {item.calories != null && <span className="text-xs text-[var(--text-tertiary)]">{item.calories} kcal</span>}
-                <button type="button" onClick={() => void removeMealItem(item.id)} aria-label="Remover" className="text-[var(--text-tertiary)] hover:text-[var(--danger)]">
+                <IconButton label="Remover" tone="danger" onClick={(e) => void removeAnimated(e.currentTarget, () => removeMealItem(item.id))}>
                   <TrashIcon width={13} height={13} />
-                </button>
+                </IconButton>
               </div>
             </div>
           ))}

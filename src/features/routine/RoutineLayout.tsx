@@ -14,10 +14,13 @@ export function RoutineLayout() {
   const current = segments.find((s) => location.pathname.endsWith(s.value))?.value ?? 'treino'
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="reveal flex flex-col gap-5">
       <PageHeader title="Rotina" icon={<DumbbellIcon width={20} height={20} />} />
       <SegmentedControl segments={segments} value={current} onChange={(v) => navigate(`/rotina/${v}`)} />
-      <Outlet />
+      {/* a sub-aba tem a própria entrada (reveal na raiz dela, que reaparece a cada troca) */}
+      <div data-no-reveal>
+        <Outlet />
+      </div>
     </div>
   )
 }
