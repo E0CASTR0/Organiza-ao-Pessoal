@@ -17,7 +17,7 @@ import { listGoals, listCompletionsByDate, addGoal, toggleGoalForDate, removeGoa
 import { listEventsByDate } from '@/db/repositories/events.repo'
 import { listFixedBills } from '@/db/repositories/fixedBills.repo'
 import { getActiveDiet } from '@/db/repositories/diets.repo'
-import { getGlasses, addGlasses, DEFAULT_WATER_GOAL } from '@/db/repositories/water.repo'
+import { getGlasses, addGlasses, waterTargetGlasses, formatLiters, waterLiters } from '@/db/repositories/water.repo'
 import { getSettings } from '@/db/repositories/settings.repo'
 import { todayKey, formatDateHeader, capitalizeFirst, toWeekdayIndex, WEEKDAY_INITIAL } from '@/utils/date'
 import { formatCurrency } from '@/utils/currency'
@@ -62,7 +62,7 @@ export function HomePage() {
   const activeDiet = useLiveQuery(() => getActiveDiet(), [])
 
   const ready = stats !== undefined && glasses !== undefined && upcomingEvents !== undefined
-  const waterGoal = settings?.waterGoal ?? DEFAULT_WATER_GOAL
+  const waterGoal = waterTargetGlasses(settings)
   const nextEvent = upcomingEvents ? pickNextEvent(upcomingEvents, now) : null
   const eta = nextEvent ? minutesUntil(nextEvent, now) : null
   const isNear = eta !== null && eta <= 120
@@ -170,6 +170,9 @@ export function HomePage() {
               <p className="mt-1.5 leading-none">
                 <span className="text-[1.7rem] font-semibold tracking-tight text-[var(--text-primary)]">{glasses}</span>
                 <span className="ml-1 text-xs text-[var(--text-tertiary)]">de {waterGoal} copos</span>
+              </p>
+              <p className="mt-1 text-xs text-[var(--text-secondary)]">
+                {formatLiters(glasses ?? 0, settings)} de {waterLiters(settings).toLocaleString('pt-BR')} L
               </p>
               <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-[var(--border-default)]">
                 <div className="bar-x h-full w-full rounded-full bg-[var(--accent)]" style={{ transform: `scaleX(${waterRatio})` }} />

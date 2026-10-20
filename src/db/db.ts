@@ -21,6 +21,7 @@ import type {
   Settings,
   TrashItem,
   WaterLog,
+  SavingsEntry,
 } from './models'
 
 export const db = new Dexie('organizacao-pessoal') as Dexie & {
@@ -44,6 +45,7 @@ export const db = new Dexie('organizacao-pessoal') as Dexie & {
   settings: EntityTable<Settings, 'id'>
   trashItems: EntityTable<TrashItem, 'id'>
   waterLogs: EntityTable<WaterLog, 'id'>
+  savingsEntries: EntityTable<SavingsEntry, 'id'>
 }
 
 // Observação: campos booleanos (bought, completed, isActive...) não entram como índice
@@ -252,6 +254,31 @@ db.version(5).stores({
   settings: 'id',
   trashItems: 'id, entityType, deletedAt',
   waterLogs: 'id, date',
+})
+
+// v6: Caixinha (dinheiro guardado). Também só ADICIONA uma tabela.
+db.version(6).stores({
+  dailyGoals: 'id, order',
+  dailyGoalCompletions: 'id, goalId, date',
+  events: 'id, date',
+  monthlyPriorities: 'id, month, order',
+  shoppingItems: 'id, order',
+  workTasks: 'id, order',
+  notes: 'id, updatedAt',
+  investmentCategories: 'id, order',
+  investments: 'id, categoryId',
+  investmentReturns: 'id, investmentId, month',
+  workoutDays: 'id, weekday, order',
+  exercises: 'id, workoutDayId, order',
+  diets: 'id',
+  dietMealItems: 'id, dietId, meal, order',
+  fixedBills: 'id, dueDay, order',
+  fixedBillPayments: 'id, fixedBillId, month',
+  profile: 'id',
+  settings: 'id',
+  trashItems: 'id, entityType, deletedAt',
+  waterLogs: 'id, date',
+  savingsEntries: 'id, date',
 })
 
 /** Garante as linhas singleton (profile/settings) e os dados iniciais na primeira vez que o app abre.

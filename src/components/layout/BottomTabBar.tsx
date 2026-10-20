@@ -28,10 +28,11 @@ export function BottomTabBar() {
     // grande demais embaixo da barra, então em vez de tentar acertar o valor "certo"
     // dinamicamente, travei num número fixo pequeno que gruda a barra na base de verdade.
     // position:fixed direto no viewport (bottom:0) com respiro fixo — confirmado funcionando
-    // no aparelho real (o bug anterior era só cache do Safari). Em 20/10/2026 o respiro de baixo
-    // caiu de 20px pra 12px (+ 4px do próprio botão) e a barra ficou mais baixa/compacta, como a
-    // do Instagram: o texto das abas fica a ~16px da borda, ainda acima do risquinho do iPhone.
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border-subtle)] bg-[var(--bg-elevated-1)] pb-3">
+    // no aparelho real (o bug anterior era só cache do Safari). O respiro de baixo agora é
+    // --nav-pb (theme.css): ~8px no app instalado, 2px no Safari. O `after:` pinta a mesma cor
+    // da barra pra baixo dela, e o <html> tem essa cor de fundo — se o iPhone deixar qualquer
+    // faixa abaixo da barra, ela some na cor da barra em vez de virar um "vão".
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border-subtle)] bg-[var(--bg-elevated-1)] pb-[var(--nav-pb)] after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-32 after:bg-[var(--bg-elevated-1)] after:content-['']">
       <div className="relative mx-auto flex max-w-lg items-stretch justify-between px-2">
         {/* Indicador da aba ativa: uma barrinha prateada colada no topo da barra que DESLIZA de uma
             aba pra outra. É só um enfeite visual posicionado dentro do contêiner das abas

@@ -7,6 +7,9 @@ import { useTheme } from '@/theme/useTheme'
 import { BackupSection } from './BackupSection'
 import { DangerZone } from './DangerZone'
 import { AppearanceSection } from './AppearanceSection'
+import { WaterSection } from './WaterSection'
+import { AboutSection } from './AboutSection'
+import { NotificationsSection } from './NotificationsSection'
 import { TrashIcon, SettingsIcon } from '@/components/ui/icons'
 
 export function SettingsPage() {
@@ -27,6 +30,10 @@ export function SettingsPage() {
 
       <AppearanceSection />
 
+      <WaterSection />
+
+      <NotificationsSection />
+
       <Link to="/mais/lixeira" className="surface surface-interactive press flex items-center justify-between rounded-[var(--radius-md)] p-4">
         <div className="flex items-center gap-3">
           <TrashIcon width={18} height={18} className="text-[var(--text-secondary)]" />
@@ -36,6 +43,7 @@ export function SettingsPage() {
       </Link>
 
       <BackupSection />
+      <AboutSection />
       <DangerZone />
     </div>
   )

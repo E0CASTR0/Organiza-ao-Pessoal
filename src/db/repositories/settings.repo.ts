@@ -1,5 +1,5 @@
 import { db } from '../db'
-import type { AccentKey, ThemeMode } from '../models'
+import type { AccentKey, NotificationPrefs, ThemeMode } from '../models'
 
 export function getSettings() {
   return db.settings.get('settings')
@@ -23,6 +23,14 @@ export async function setAccent(accent: AccentKey): Promise<void> {
   }
 }
 
-export async function setWaterGoal(waterGoal: number): Promise<void> {
-  await db.settings.update('settings', { waterGoal, updatedAt: new Date().toISOString() })
+export async function setNotificationPrefs(notifications: NotificationPrefs): Promise<void> {
+  await db.settings.update('settings', { notifications, updatedAt: new Date().toISOString() })
+}
+
+export async function setSavingsGoal(savingsGoal: number | null): Promise<void> {
+  await db.settings.update('settings', { savingsGoal, updatedAt: new Date().toISOString() })
+}
+
+export async function setWaterConfig(config: { waterLiters?: number; glassMl?: number; waterLinkedGoalId?: string | null }): Promise<void> {
+  await db.settings.update('settings', { ...config, updatedAt: new Date().toISOString() })
 }

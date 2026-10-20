@@ -20,6 +20,8 @@ export interface DailyGoalCompletion {
   goalId: string
   date: string // 'AAAA-MM-DD'
   completedAt: string
+  /** true quando a conclusão foi marcada sozinha pelo contador de água (e por isso pode ser desmarcada por ele). */
+  auto?: boolean
 }
 
 export interface EventItem {
@@ -177,6 +179,24 @@ export type ThemeMode = 'dark' | 'light'
 /** Cor de destaque do app (a "prata" é a original). */
 export type AccentKey = 'prata' | 'champagne' | 'bronze' | 'salvia'
 
+/** Lançamento da Caixinha (dinheiro guardado): `amount` positivo = guardou, negativo = retirou. */
+export interface SavingsEntry {
+  id: string
+  date: string // 'AAAA-MM-DD'
+  amount: number
+  note: string
+  createdAt: string
+}
+
+/** Quais lembretes o usuário quer receber. */
+export interface NotificationPrefs {
+  enabled: boolean
+  events: boolean
+  bills: boolean
+  goals: boolean
+  water: boolean
+}
+
 /** Copos de água bebidos num dia. */
 export interface WaterLog {
   id: string
@@ -191,7 +211,13 @@ export interface Settings {
   recurringEventsSeeded?: boolean // marca que os compromissos fixos (treino/curso) já foram adicionados uma vez
   barbeariaOnTuesday?: boolean // marca que o curso de barbearia já foi passado de segunda pra terça
   accent?: AccentKey // cor de destaque escolhida em Configurações
-  waterGoal?: number // meta diária de copos de água (padrão 8)
+  waterGoal?: number // (antigo) meta de copos — substituída por waterLiters + glassMl
+  waterLiters?: number // meta diária de água em litros (padrão 3)
+  glassMl?: number // tamanho do copo em ml (padrão 250)
+  /** Meta diária que é marcada sozinha quando a água fecha: undefined = detectar pelo nome ("água"), null = nenhuma, id = essa meta. */
+  waterLinkedGoalId?: string | null
+  savingsGoal?: number | null // meta da Caixinha em reais
+  notifications?: NotificationPrefs
   updatedAt: string
 }
 

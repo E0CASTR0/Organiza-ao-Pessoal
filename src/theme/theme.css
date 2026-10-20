@@ -23,6 +23,11 @@
      nada além disso. Sem esse teto, sobrava um vão vazio embaixo da barra de navegação. */
   --safe-bottom: min(env(safe-area-inset-bottom, 0px), 34px);
   --safe-top: env(safe-area-inset-top, 0px);
+  /* Respiro embaixo da barra de abas. No app instalado o iPhone reserva ~34 px pro risquinho
+     de "voltar pra tela inicial": descontamos 26 px disso (sobram ~8 px) pra a barra ficar o
+     mais colada embaixo possível sem encostar no risquinho. No Safari (sem margem de segurança)
+     vira só 2 px. Nunca passa disso — nada de valor fixo grande. */
+  --nav-pb: max(2px, calc(env(safe-area-inset-bottom, 0px) - 26px));
   /* fallback caso o script em index.html ainda não tenha rodado (frações de segundo) —
      o script sempre sobrescreve isso com window.innerHeight logo no <head> */
   --app-height: 100vh;
@@ -153,6 +158,12 @@ body {
    (a <main> do AppShell, que tem seu próprio overflow-y:auto) rola de verdade. Sem isso,
    o Safari deixa a PÁGINA TODA balançar/voltar quando arrasta além do limite, o que fazia
    até a barra de abas de baixo (fora da área de rolagem) parecer "subir e descer" junto. */
+html {
+  /* mesma cor da barra de abas: se o iPhone deixar qualquer faixa abaixo dela, a faixa some
+     na cor da barra em vez de aparecer como um "vão preto" */
+  background-color: var(--bg-elevated-1);
+}
+
 html,
 body {
   position: fixed;

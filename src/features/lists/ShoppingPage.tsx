@@ -5,6 +5,7 @@ import { Checkbox } from '@/components/ui/Checkbox'
 import { Button } from '@/components/ui/Button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { PlusIcon } from '@/components/ui/icons'
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { listShoppingItems, toggleBought } from '@/db/repositories/shoppingItems.repo'
 import { formatCurrency } from '@/utils/currency'
 import { ShoppingItemFormModal } from './ShoppingItemFormModal'
@@ -15,7 +16,10 @@ export function ShoppingPage() {
   const [editing, setEditing] = useState<ShoppingItem | null>(null)
   const items = useLiveQuery(() => listShoppingItems(), []) ?? []
 
-  const total = items.reduce((sum, item) => sum + (item.price ?? 0), 0)
+  // O total é o que AINDA FALTA comprar: marcou "comprado", o valor sai da conta.
+  const remaining = items.filter((item) => !item.bought).reduce((sum, item) => sum + (item.price ?? 0), 0)
+  const spent = items.filter((item) => item.bought).reduce((sum, item) => sum + (item.price ?? 0), 0)
+  const boughtCount = items.filter((item) => item.bought).length
 
   const openNew = () => {
     setEditing(null)
@@ -30,9 +34,17 @@ export function ShoppingPage() {
   return (
     <div className="reveal flex flex-col gap-4">
       {items.length > 0 && (
-        <Card className="flex items-center justify-between p-4">
-          <p className="text-sm text-[var(--text-secondary)]">Total da lista</p>
-          <p className="font-heading text-2xl text-[var(--text-primary)]">{formatCurrency(total)}</p>
+        <Card className="flex items-end justify-between gap-3 p-4">
+          <div className="min-w-0">
+            <p className="text-sm text-[var(--text-secondary)]">{remaining === 0 && boughtCount === items.length ? 'Tudo comprado' : 'Falta comprar'}</p>
+            <AnimatedNumber value={remaining} format={formatCurrency} className="mt-0.5 block text-[1.9rem] font-semibold leading-tight tracking-tight text-[var(--text-primary)]" />
+          </div>
+          <div className="shrink-0 text-right text-sm text-[var(--text-tertiary)]">
+            <p>
+              {boughtCount} de {items.length} {items.length === 1 ? 'item comprado' : 'itens comprados'}
+            </p>
+            {spent > 0 && <p>{formatCurrency(spent)} já comprado</p>}
+          </div>
         </Card>
       )}
 

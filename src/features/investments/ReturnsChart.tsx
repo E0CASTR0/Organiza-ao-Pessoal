@@ -38,7 +38,7 @@ function barPath(x: number, baseline: number, top: number, positive: boolean): s
 /** Retorno total por mês (últimos 6). Uma série só: sem legenda — o título já diz o que é. O mês
  * em foco usa a cor de destaque e os outros ficam apagados; toque numa barra pra trocar. Há uma
  * versão em tabela pra leitor de tela. */
-export function ReturnsChart({ data }: { data: MonthTotal[] }) {
+export function ReturnsChart({ data, title = 'Retorno por mês', column = 'Retorno' }: { data: MonthTotal[]; title?: string; column?: string }) {
   const [selected, setSelected] = useState(data.length - 1)
   const values = data.map((d) => d.total)
   const max = Math.max(0, ...values)
@@ -53,12 +53,12 @@ export function ReturnsChart({ data }: { data: MonthTotal[] }) {
   return (
     <Card className="p-4">
       <div className="mb-1 flex items-baseline justify-between gap-3">
-        <h2 className="text-sm font-medium text-[var(--text-secondary)]">Retorno por mês</h2>
+        <h2 className="text-sm font-medium text-[var(--text-secondary)]">{title}</h2>
         <p className="text-xs text-[var(--text-tertiary)]">{capitalizeFirst(monthLong.format(parseMonth(current.month)))}</p>
       </div>
       <p className="mb-2 text-[1.6rem] font-semibold leading-tight tracking-tight text-[var(--text-primary)]">{formatCurrency(current.total)}</p>
 
-      <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full" role="group" aria-label={`Gráfico de barras do retorno dos últimos ${data.length} meses. Há uma tabela logo abaixo.`}>
+      <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full" role="group" aria-label={`Gráfico de barras dos últimos ${data.length} meses. Há uma tabela logo abaixo.`}>
         <line x1="0" x2={WIDTH} y1={baseline} y2={baseline} stroke="var(--border-default)" strokeWidth="1" />
         {data.map((d, i) => {
           const x = i * slot + (slot - BAR_WIDTH) / 2
@@ -113,14 +113,14 @@ export function ReturnsChart({ data }: { data: MonthTotal[] }) {
       <details className="mt-2 text-sm">
         <summary className="cursor-pointer text-[var(--text-tertiary)]">Ver em tabela</summary>
         <table className="mt-2 w-full text-left">
-          <caption className="sr-only">Retorno total por mês</caption>
+          <caption className="sr-only">{title}</caption>
           <thead>
             <tr className="text-[var(--text-tertiary)]">
               <th scope="col" className="py-1 font-normal">
                 Mês
               </th>
               <th scope="col" className="py-1 text-right font-normal">
-                Retorno
+                {column}
               </th>
             </tr>
           </thead>

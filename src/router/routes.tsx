@@ -6,11 +6,14 @@ import { PrioritiesPage } from '@/features/lists/PrioritiesPage'
 import { ShoppingPage } from '@/features/lists/ShoppingPage'
 import { WorkPage } from '@/features/lists/WorkPage'
 import { NotesPage } from '@/features/lists/NotesPage'
+import { NotesStandalonePage } from '@/features/lists/NotesStandalonePage'
+import { NoteViewPage } from '@/features/lists/NoteViewPage'
 import { RoutineLayout } from '@/features/routine/RoutineLayout'
 import { WorkoutPage } from '@/features/routine/WorkoutPage'
 import { DietPage } from '@/features/routine/DietPage'
 import { MorePage } from '@/features/more/MorePage'
 import { InvestmentsPage } from '@/features/investments/InvestmentsPage'
+import { SavingsPage } from '@/features/savings/SavingsPage'
 import { FixedBillsPage } from '@/features/bills/FixedBillsPage'
 import { ProfilePage } from '@/features/profile/ProfilePage'
 import { SettingsPage } from '@/features/settings/SettingsPage'
@@ -31,6 +34,8 @@ export function AppRoutes() {
         <Route path="notas" element={<NotesPage />} />
       </Route>
 
+      <Route path="/listas/notas/:id" element={<NoteViewPage />} />
+
       <Route path="/rotina" element={<RoutineLayout />}>
         <Route index element={<Navigate to="treino" replace />} />
         <Route path="treino" element={<WorkoutPage />} />
@@ -38,6 +43,9 @@ export function AppRoutes() {
       </Route>
 
       <Route path="/mais" element={<MorePage />} />
+      <Route path="/mais/notas" element={<NotesStandalonePage />} />
+      <Route path="/mais/notas/:id" element={<NoteViewPage />} />
+      <Route path="/mais/guardado" element={<SavingsPage />} />
       <Route path="/mais/investimentos" element={<InvestmentsPage />} />
       <Route path="/mais/contas-fixas" element={<FixedBillsPage />} />
       <Route path="/mais/perfil" element={<ProfilePage />} />

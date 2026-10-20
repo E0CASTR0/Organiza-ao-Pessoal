@@ -4,6 +4,7 @@ import { AppShell } from '@/components/layout/AppShell'
 import { ErrorBoundary } from '@/components/layout/ErrorBoundary'
 import { ThemeProvider } from '@/theme/ThemeProvider'
 import { ToastProvider } from '@/components/ui/ToastProvider'
+import { RemindersRunner } from '@/components/layout/RemindersRunner'
 import { AppRoutes } from '@/router/routes'
 import { ensureSeedData } from '@/db/db'
 
@@ -19,6 +20,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <ToastProvider>
+        <RemindersRunner />
         <HashRouter>
           <AppShell>
             <ErrorBoundary>

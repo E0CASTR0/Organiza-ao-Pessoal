@@ -237,3 +237,58 @@ export function ClockIcon(props: IconProps) {
     </svg>
   )
 }
+
+export function PencilIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M4.5 19.5 5.3 15 15.8 4.5a1.8 1.8 0 0 1 2.5 0l1.2 1.2a1.8 1.8 0 0 1 0 2.5L9 18.7l-4.5.8Z" />
+      <path d="m14 6.5 3.5 3.5" />
+    </svg>
+  )
+}
+
+export function CopyIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="8.5" y="8.5" width="11" height="11" rx="2" />
+      <path d="M15.5 8.5V6.5a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h2" />
+    </svg>
+  )
+}
+
+/** Notas (folha com linhas). */
+export function NoteIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M6 3.5h9.5L19 7v12.5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-15a1 1 0 0 1 1-1Z" />
+      <path d="M15 3.5V7h4M8.5 11h7M8.5 14.5h7M8.5 18h4" />
+    </svg>
+  )
+}
+
+/** Cofrinho (Caixinha). */
+export function PiggyIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M5 12.5c0-3.3 3-5.5 7-5.5 1.3 0 2.5.2 3.5.7L18.5 6v3.2c.9.9 1.5 2 1.5 3.3 0 .8-.2 1.5-.6 2.1V17a1 1 0 0 1-1 1h-1.5a1 1 0 0 1-1-1v-.6c-.8.2-1.6.3-2.4.3s-1.6-.1-2.4-.3V17a1 1 0 0 1-1 1H8.5a1 1 0 0 1-1-1v-1.8C6 14.5 5 13.6 5 12.5Z" />
+      <circle cx="15.5" cy="11" r=".7" fill="currentColor" stroke="none" />
+      <path d="M10.5 5.2c.5-.4 1.2-.6 2-.6" />
+    </svg>
+  )
+}
+
+export function ArrowUpIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 19V5M6 11l6-6 6 6" />
+    </svg>
+  )
+}
+
+export function ArrowDownIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 5v14M6 13l6 6 6-6" />
+    </svg>
+  )
+}

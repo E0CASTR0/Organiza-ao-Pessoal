@@ -10,6 +10,10 @@ const repoBase = process.env.VITE_BASE_PATH ?? '/'
 // https://vite.dev/config/
 export default defineConfig({
   base: repoBase,
+  define: {
+    // mostrado em Configurações > Sobre: confirma de qual versão o app está rodando de verdade
+    __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+  },
   resolve: {
     alias: {
       '@': path.resolve(import.meta.dirname, 'src'),

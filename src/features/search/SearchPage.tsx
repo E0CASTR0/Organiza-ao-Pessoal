@@ -39,7 +39,7 @@ export function SearchPage() {
     for (const t of tasks) if (t.title.toLowerCase().includes(term)) found.push({ id: t.id, title: t.title, section: 'Trabalho', to: '/listas/trabalho' })
     for (const b of bills) if (b.name.toLowerCase().includes(term)) found.push({ id: b.id, title: b.name, section: 'Contas Fixas', to: '/mais/contas-fixas' })
     for (const d of diets) if (d.title.toLowerCase().includes(term)) found.push({ id: d.id, title: d.title, section: 'Dieta', to: '/rotina/dieta' })
-    for (const n of notes) if (n.title.toLowerCase().includes(term) || n.content.toLowerCase().includes(term)) found.push({ id: n.id, title: n.title, section: 'Nota', to: '/listas/notas' })
+    for (const n of notes) if (n.title.toLowerCase().includes(term) || n.content.toLowerCase().includes(term)) found.push({ id: n.id, title: n.title, section: 'Nota', to: `/listas/notas/${n.id}` })
     return found
   }, [query]) ?? []
 
