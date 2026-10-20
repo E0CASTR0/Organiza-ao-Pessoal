@@ -109,7 +109,7 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
         aria-modal="true"
         aria-label={shown.title}
         data-state={state}
-        className="sheet-panel relative z-10 flex max-h-[88vh] w-full max-w-md flex-col rounded-t-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--bg-elevated-1)] shadow-[0_-4px_24px_var(--shadow)] sm:rounded-[var(--radius-lg)] sm:shadow-[0_8px_32px_var(--shadow)]"
+        className="surface sheet-panel relative z-10 flex max-h-[88vh] w-full max-w-md flex-col rounded-t-[var(--radius-lg)] shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_-8px_32px_var(--shadow)] sm:rounded-[var(--radius-lg)] sm:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_8px_32px_var(--shadow)]"
       >
         {/* zona de arrastar: alcinha + título (fora da área que rola, e sem scroll do navegador) */}
         <div
@@ -122,7 +122,7 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
         >
           <div className="mx-auto h-1 w-9 rounded-full bg-[var(--border-default)] sm:hidden" />
           <div className="flex items-center justify-between gap-4 pb-3 pt-3">
-            <h2 className="font-[var(--font-heading)] text-lg text-[var(--text-primary)]">{shown.title}</h2>
+            <h2 className="font-heading text-lg text-[var(--text-primary)]">{shown.title}</h2>
             <button
               type="button"
               onClick={onClose}

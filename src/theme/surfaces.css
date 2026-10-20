@@ -1,0 +1,51 @@
+/*
+ * Superfícies — o "acabamento" dos cartões, folhas, campos e da tela de fundo.
+ * Os valores vêm dos tokens em theme.css (--surface-*, --field-*, --ambient), então tudo
+ * troca junto com o tema claro/escuro.
+ */
+
+@layer components {
+  /* Cartão em camadas, com 3 pinturas empilhadas no mesmo `background` (a de cima primeiro):
+       1. brilho de topo (sheen) — só no miolo (padding-box);
+       2. a cor de preenchimento — só no miolo, opaca, pra esconder a camada 3 por baixo;
+       3. o contorno em degradê (edge) — pintado até a borda (border-box), que é transparente,
+          então o degradê aparece só na faixa de 1 px da borda.
+     É o jeito de ter borda com degradê mantendo o raio arredondado. O preenchimento é um
+     gradiente "chapado" porque `background-color` só é permitido na ÚLTIMA camada do atalho.
+     Utilitários do Tailwind (ex: `border-[var(--accent)]` num cartão ativo) ainda ganham deste
+     bloco por estarem numa camada de cascata acima. */
+  .surface {
+    --surface-fill: var(--bg-elevated-1);
+    border: 1px solid transparent;
+    background:
+      var(--surface-sheen) padding-box,
+      linear-gradient(var(--surface-fill), var(--surface-fill)) padding-box,
+      var(--surface-edge) border-box;
+    box-shadow: var(--surface-shadow);
+  }
+  .surface-raised {
+    --surface-fill: var(--bg-elevated-2);
+  }
+  /* só onde existe "hover" de verdade (mouse) — no toque, quem responde é o .press */
+  @media (hover: hover) {
+    .surface-interactive:hover {
+      --surface-fill: var(--bg-elevated-2);
+    }
+  }
+
+  /* brilho suave no alto da tela, atrás de tudo (ver AppShell) */
+  .app-ambient {
+    background-image: radial-gradient(120% 46% at 50% -8%, var(--ambient), transparent 72%);
+  }
+
+  /* barrinha prateada da aba ativa — desliza entre as 5 abas (ver BottomTabBar) */
+  .tab-indicator {
+    transition: transform 420ms var(--ease-spring);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-indicator {
+    transition: none;
+  }
+}

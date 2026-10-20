@@ -16,7 +16,7 @@ export function MorePage() {
       <PageHeader title="Mais" icon={<GridIcon width={20} height={20} />} />
       <Link
         to="/mais/busca"
-        className="press flex items-center gap-2.5 rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--bg-elevated-1)] px-4 py-3 text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]"
+        className="surface surface-interactive press flex items-center gap-2.5 rounded-[var(--radius-md)] px-4 py-3 text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]"
       >
         <SearchIcon width={18} height={18} />
         Buscar em todo o app

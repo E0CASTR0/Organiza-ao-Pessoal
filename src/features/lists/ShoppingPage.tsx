@@ -32,7 +32,7 @@ export function ShoppingPage() {
       {items.length > 0 && (
         <Card className="flex items-center justify-between p-4">
           <p className="text-sm text-[var(--text-secondary)]">Total da lista</p>
-          <p className="font-[var(--font-heading)] text-xl text-[var(--text-primary)]">{formatCurrency(total)}</p>
+          <p className="font-heading text-2xl lining-nums tabular-nums text-[var(--text-primary)]">{formatCurrency(total)}</p>
         </Card>
       )}
 

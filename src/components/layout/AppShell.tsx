@@ -7,7 +7,9 @@ export function AppShell({ children }: { children: ReactNode }) {
     // fixed + inset-0 direto no container do app: gruda nas 4 bordas do viewport real,
     // sem depender de nenhum cálculo de altura (dvh/%/JS já se mostraram não confiáveis
     // no modo instalado do iOS real).
-    <div className="fixed inset-0 flex flex-col bg-[var(--bg-base)]">
+    // app-ambient: só um brilho suave de fundo no alto (background-image) — não mexe em
+    // posição nem em tamanho, o `fixed inset-0` acima continua exatamente igual
+    <div className="app-ambient fixed inset-0 flex flex-col bg-[var(--bg-base)]">
       <main
         className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
         style={{ paddingTop: 'calc(var(--safe-top) + 1.25rem)' }}

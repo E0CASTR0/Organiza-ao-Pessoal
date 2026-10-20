@@ -25,7 +25,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.error) {
       return (
         <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[var(--bg-base)] p-6 text-center">
-          <p className="font-[var(--font-heading)] text-xl text-[var(--text-primary)]">Algo deu errado</p>
+          <p className="font-heading text-xl text-[var(--text-primary)]">Algo deu errado</p>
           <p className="max-w-xs text-sm text-[var(--text-secondary)]">
             Nenhum dado foi perdido. Tenta recarregar — se continuar acontecendo, me avisa o que você estava fazendo.
           </p>

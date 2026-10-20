@@ -63,7 +63,7 @@ export function InvestmentFormModal({ open, onClose, categories, defaultCategory
           <select
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
-            className="w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-elevated-1)] px-3.5 py-2.5 text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+            className="w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--field-bg)] shadow-[var(--field-shadow)] px-3.5 py-2.5 text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
           >
             {categories.map((cat) => (
               <option key={cat.id} value={cat.id}>

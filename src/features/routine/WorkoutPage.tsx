@@ -81,7 +81,7 @@ export function WorkoutPage() {
               </form>
             ) : (
               <button onClick={startRenaming} className="press text-left">
-                <p className="font-[var(--font-heading)] text-lg text-[var(--text-primary)]">{currentDay.label}</p>
+                <p className="font-heading text-lg text-[var(--text-primary)]">{currentDay.label}</p>
                 <p className="text-xs text-[var(--text-tertiary)]">Toque para renomear</p>
               </button>
             )}

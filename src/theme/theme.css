@@ -30,12 +30,28 @@
 :root,
 [data-theme='dark'] {
   --bg-base: #060606;
-  --bg-elevated-1: #121211;
-  --bg-elevated-2: #1b1b19;
-  --bg-elevated-3: #262523;
+  /* um tom acima do que era (#121211/#1b1b19/#262523): os cartões separavam do fundo com
+     contraste de 1,08:1 — quase invisíveis; agora dá pra enxergar o contorno de cada camada */
+  --bg-elevated-1: #151514;
+  --bg-elevated-2: #1d1d1b;
+  --bg-elevated-3: #292826;
 
-  --border-subtle: rgba(255, 255, 255, 0.07);
-  --border-default: rgba(255, 255, 255, 0.14);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-default: rgba(255, 255, 255, 0.15);
+
+  /* Acabamento das superfícies (ver surfaces.css): um brilho de topo bem suave, um contorno
+     que pega luz no canto de cima e se apaga embaixo (como metal escovado) e um realce de 1 px
+     na borda superior. Tudo em branco translúcido, então continua preto/grafite/prata. */
+  --surface-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 55%);
+  --surface-edge: linear-gradient(160deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.05) 40%, rgba(255, 255, 255, 0.09) 100%);
+  --surface-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 1px 2px rgba(0, 0, 0, 0.45), 0 16px 30px -18px rgba(0, 0, 0, 0.9);
+  /* campos de texto "afundados" (mais escuros que o cartão onde ficam) */
+  --field-bg: #0b0b0a;
+  --field-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.55);
+  /* botão principal: realce de topo + sombra curta */
+  --btn-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 6px 14px -8px rgba(0, 0, 0, 0.8);
+  /* brilho ambiente no alto da tela */
+  --ambient: rgba(220, 212, 190, 0.075);
 
   --text-primary: #f3f2ee;
   --text-secondary: #a6a49c;
@@ -70,6 +86,14 @@
   --border-subtle: rgba(0, 0, 0, 0.08);
   --border-default: rgba(0, 0, 0, 0.15);
 
+  --surface-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0) 60%);
+  --surface-edge: linear-gradient(160deg, rgba(0, 0, 0, 0.16) 0%, rgba(0, 0, 0, 0.06) 40%, rgba(0, 0, 0, 0.1) 100%);
+  --surface-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 2px rgba(60, 50, 30, 0.07), 0 14px 26px -18px rgba(60, 50, 30, 0.35);
+  --field-bg: #fbfaf6;
+  --field-shadow: inset 0 1px 2px rgba(60, 50, 30, 0.12);
+  --btn-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 6px 14px -8px rgba(30, 24, 10, 0.45);
+  --ambient: rgba(255, 255, 255, 0.9);
+
   --text-primary: #1b1a17;
   --text-secondary: #58554c;
   /* era #8b8779 (3,3:1 no fundo claro); #6f6b5e dá 4,9:1 */
@@ -90,6 +114,16 @@
 
   --shadow: rgba(0, 0, 0, 0.12);
   --overlay: rgba(20, 18, 14, 0.45);
+}
+
+/* Fonte dos títulos (Playfair Display). A classe `font-[var(--font-heading)]` que existia antes
+   NÃO funcionava: o Tailwind v4 lê `font-[var(--x)]` como font-WEIGHT (gerava
+   `font-weight: var(--font-heading)`, valor inválido), então os títulos sempre saíram em
+   Inter e a Playfair nunca chegou a ser usada. Números em algarismos "de altura" uniforme
+   (lining): os padrões da Playfair são em estilo antigo, com dígitos de alturas diferentes. */
+@utility font-heading {
+  font-family: var(--font-heading);
+  font-variant-numeric: lining-nums;
 }
 
 /* #root só precisa preencher o body (que já é fixed+inset:0 logo abaixo) — html/body

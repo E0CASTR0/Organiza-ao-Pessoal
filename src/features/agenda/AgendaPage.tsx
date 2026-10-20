@@ -67,7 +67,7 @@ export function AgendaPage() {
             </IconButton>
             <div className="text-center">
               <p className="text-xs font-medium uppercase tracking-wide text-[var(--text-tertiary)]">{WEEKDAY_LABELS[toWeekdayIndex(anchor)]}</p>
-              <p className="font-medium text-[var(--text-primary)]">{formatDateLong(dateKey)}</p>
+              <p className="font-heading text-[1.2rem] font-medium leading-snug text-[var(--text-primary)]">{formatDateLong(dateKey)}</p>
               {dateKey !== todayKey() && (
                 <button onClick={() => setAnchor(new Date())} className="press text-xs text-[var(--accent)]">
                   Voltar para hoje

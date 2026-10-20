@@ -67,15 +67,15 @@ export function InvestmentsPage() {
       <div className="reveal grid grid-cols-2 gap-3">
         <Card className="p-4">
           <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">Total investido</p>
-          <p className="mt-1 font-[var(--font-heading)] text-xl text-[var(--text-primary)]">{formatCurrency(totalInvested)}</p>
+          <p className="mt-1 font-heading text-2xl lining-nums tabular-nums text-[var(--text-primary)]">{formatCurrency(totalInvested)}</p>
         </Card>
         <Card className="p-4">
           <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">Retorno do mês</p>
-          <p className="mt-1 font-[var(--font-heading)] text-xl text-[var(--text-primary)]">{formatCurrency(totalReturnThisMonth)}</p>
+          <p className="mt-1 font-heading text-2xl lining-nums tabular-nums text-[var(--text-primary)]">{formatCurrency(totalReturnThisMonth)}</p>
         </Card>
         <Card className="col-span-2 p-4">
           <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">Retorno total (todos os meses)</p>
-          <p className="mt-1 font-[var(--font-heading)] text-xl text-[var(--success)]">{formatCurrency(allTimeReturn)}</p>
+          <p className="mt-1 font-heading text-2xl lining-nums tabular-nums text-[var(--success)]">{formatCurrency(allTimeReturn)}</p>
         </Card>
       </div>
 

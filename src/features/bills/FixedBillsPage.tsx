@@ -56,11 +56,11 @@ export function FixedBillsPage() {
       <div className="reveal grid grid-cols-2 gap-3">
         <Card className="p-4">
           <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">Total do mês</p>
-          <p className="mt-1 font-[var(--font-heading)] text-xl text-[var(--text-primary)]">{formatCurrency(totalMonth)}</p>
+          <p className="mt-1 font-heading text-2xl lining-nums tabular-nums text-[var(--text-primary)]">{formatCurrency(totalMonth)}</p>
         </Card>
         <Card className="p-4">
           <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">Já pago</p>
-          <p className="mt-1 font-[var(--font-heading)] text-xl text-[var(--success)]">{formatCurrency(totalPaid)}</p>
+          <p className="mt-1 font-heading text-2xl lining-nums tabular-nums text-[var(--success)]">{formatCurrency(totalPaid)}</p>
         </Card>
       </div>
 

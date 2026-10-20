@@ -5,7 +5,7 @@ interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const fieldClasses =
-  'w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-elevated-1)] px-3.5 py-2.5 text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none transition-colors focus:border-[var(--accent)]'
+  'w-full rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--field-bg)] shadow-[var(--field-shadow)] px-3.5 py-2.5 text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none transition-colors focus:border-[var(--accent)]'
 
 export function TextField({ label, className = '', id, ...rest }: TextFieldProps) {
   return (

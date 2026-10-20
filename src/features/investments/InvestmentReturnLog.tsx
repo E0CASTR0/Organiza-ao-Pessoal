@@ -58,7 +58,7 @@ export function InvestmentReturnLog({ investmentId }: { investmentId: string }) 
           inputMode="decimal"
           step="0.01"
           placeholder="Adicionar retorno (R$)"
-          className="min-w-0 flex-1 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--bg-elevated-1)] px-2.5 py-1.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none focus:border-[var(--accent)]"
+          className="min-w-0 flex-1 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--field-bg)] shadow-[var(--field-shadow)] px-2.5 py-1.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none focus:border-[var(--accent)]"
         />
         <Button type="submit" size="sm" aria-label="Adicionar lançamento">
           <PlusIcon width={14} height={14} />

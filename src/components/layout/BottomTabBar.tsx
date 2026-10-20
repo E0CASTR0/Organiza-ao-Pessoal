@@ -1,5 +1,6 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { HomeIcon, CalendarIcon, ListIcon, DumbbellIcon, GridIcon } from '@/components/ui/icons'
+import { currentTabIndex } from './tabs'
 import type { ComponentType, SVGProps } from 'react'
 
 interface Tab {
@@ -17,6 +18,9 @@ const tabs: Tab[] = [
 ]
 
 export function BottomTabBar() {
+  const { pathname } = useLocation()
+  const activeIndex = currentTabIndex(pathname)
+
   return (
     // position:fixed direto no viewport (bottom:0), com um valor FIXO de 20px de respiro
     // embaixo — não usa mais env(safe-area-inset-bottom) nem depende da altura calculada
@@ -27,7 +31,18 @@ export function BottomTabBar() {
     // funcionando certinho no aparelho real (o bug anterior era só cache do Safari
     // servindo uma versão desatualizada, não o CSS em si).
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border-subtle)] bg-[var(--bg-elevated-1)] pb-5">
-      <div className="mx-auto flex max-w-lg items-stretch justify-between px-2">
+      <div className="relative mx-auto flex max-w-lg items-stretch justify-between px-2">
+        {/* Indicador da aba ativa: uma barrinha prateada colada no topo da barra que DESLIZA de uma
+            aba pra outra. É só um enfeite visual posicionado dentro do contêiner das abas
+            (absolute, sem entrar no fluxo): não altera a posição, a altura nem o espaçamento da
+            barra. left-2 = o px-2 do contêiner; a largura é a de uma aba (5 abas iguais). */}
+        <span
+          aria-hidden="true"
+          className="tab-indicator pointer-events-none absolute left-2 top-0 flex justify-center"
+          style={{ width: 'calc((100% - 1rem) / 5)', transform: `translate3d(${activeIndex * 100}%, 0, 0)` }}
+        >
+          <span className="h-[2px] w-7 rounded-full bg-[var(--accent)] shadow-[0_0_10px_var(--accent)]" />
+        </span>
         {tabs.map(({ to, label, Icon }) => (
           <NavLink
             key={to}

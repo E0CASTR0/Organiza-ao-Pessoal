@@ -60,12 +60,13 @@ export function SegmentedControl({ segments, value, onChange }: SegmentedControl
     <div
       ref={containerRef}
       data-hscroll
-      className="relative flex gap-1 overflow-x-auto rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--bg-elevated-1)] p-1"
+      className="relative flex gap-1 overflow-x-auto rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--field-bg)] p-1 shadow-[var(--field-shadow)]"
     >
+      {/* o seletor é um "sulco" (afundado) e a pílula ativa é uma peça em relevo que desliza nele */}
       <span
         ref={thumbRef}
         aria-hidden="true"
-        className="seg-thumb pointer-events-none absolute bottom-1 left-0 top-1 rounded-[10px] bg-[var(--accent)]"
+        className="seg-thumb pointer-events-none absolute bottom-1 left-0 top-1 rounded-[10px] bg-[var(--accent)] shadow-[var(--btn-shadow)]"
       />
       {segments.map((segment) => (
         <button
