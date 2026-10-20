@@ -6,31 +6,46 @@ import { checkForUpdate, clearCacheAndReload } from '@/utils/appUpdate'
 
 const buildFormatter = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
 
-function readInsets(): { top: number; bottom: number } {
-  // lê o env(safe-area-inset-*) de verdade, medindo um elemento temporário
+/** Mede em pixels uma medida CSS (env(...), 100vh, 100lvh...) colocando um elemento de teste na tela. */
+function measure(property: 'height' | 'padding-top' | 'padding-bottom' | 'padding-left' | 'padding-right', value: string): number {
   const probe = document.createElement('div')
-  probe.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)'
+  probe.style.cssText = `position:fixed;left:0;top:0;visibility:hidden;pointer-events:none;box-sizing:content-box;${property}:${value}`
   document.body.appendChild(probe)
   const style = getComputedStyle(probe)
-  const result = { top: parseFloat(style.paddingTop) || 0, bottom: parseFloat(style.paddingBottom) || 0 }
+  const result = property === 'height' ? probe.getBoundingClientRect().height : parseFloat(style.getPropertyValue(property)) || 0
   probe.remove()
-  return result
+  return Math.round(result * 10) / 10
+}
+
+const rectText = (el: Element | null) => {
+  if (!el) return '—'
+  const r = el.getBoundingClientRect()
+  return `${Math.round(r.top)} → ${Math.round(r.bottom)}`
 }
 
 function collectInfo(): [string, string][] {
-  const nav = document.querySelector('nav')?.getBoundingClientRect()
-  const insets = readInsets()
   const standalone = (navigator as Navigator & { standalone?: boolean }).standalone === true || window.matchMedia('(display-mode: standalone)').matches
   const vv = window.visualViewport
+  const shell = document.querySelector('.app-ambient')
+  const statusMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.getAttribute('content')
   return [
     ['Modo', standalone ? 'app instalado (tela inicial)' : 'navegador (Safari)'],
-    ['Janela (innerWidth × innerHeight)', `${window.innerWidth} × ${window.innerHeight}`],
-    ['Tela (screen)', `${screen.width} × ${screen.height}`],
-    ['Área visível (visualViewport)', vv ? `${Math.round(vv.width)} × ${Math.round(vv.height)}` : 'indisponível'],
-    ['Margem de segurança (topo / base)', `${Math.round(insets.top)} / ${Math.round(insets.bottom)} px`],
-    ['Barra de baixo (topo → base)', nav ? `${Math.round(nav.top)} → ${Math.round(nav.bottom)}` : '—'],
+    ['Barra de status (meta)', statusMeta ?? '—'],
+    ['Tela (screen)', `${screen.width} × ${screen.height} (útil ${screen.availWidth} × ${screen.availHeight})`],
+    ['Janela (innerHeight)', `${window.innerWidth} × ${window.innerHeight}`],
+    ['Janela externa (outerHeight)', `${window.outerWidth} × ${window.outerHeight}`],
+    ['Documento (clientHeight)', String(document.documentElement.clientHeight)],
+    ['Área visível (visualViewport)', vv ? `${Math.round(vv.width)} × ${Math.round(vv.height)} (topo ${Math.round(vv.offsetTop)}, zoom ${vv.scale})` : 'indisponível'],
+    ['100vh / 100svh / 100lvh / 100dvh', [`100vh`, `100svh`, `100lvh`, `100dvh`].map((unit) => measure('height', unit)).join(' / ')],
+    ['Margem de segurança (topo / base)', `${measure('padding-top', 'env(safe-area-inset-top,0px)')} / ${measure('padding-bottom', 'env(safe-area-inset-bottom,0px)')}`],
+    ['Margem de segurança (esq. / dir.)', `${measure('padding-left', 'env(safe-area-inset-left,0px)')} / ${measure('padding-right', 'env(safe-area-inset-right,0px)')}`],
+    ['Fundo do app (topo → base)', rectText(shell)],
+    ['Corpo da página (topo → base)', rectText(document.body)],
+    ['Barra de baixo (topo → base)', rectText(document.querySelector('nav'))],
     ['Densidade de pixels', String(window.devicePixelRatio)],
+    ['Sistema', navigator.userAgent.match(/OS ([\d_]+)/)?.[1]?.replace(/_/g, '.') ?? navigator.userAgent.slice(0, 40)],
     ['Service worker', navigator.serviceWorker?.controller ? 'ativo' : 'inativo'],
+    ['Versão', new Date(__BUILD_TIME__).toISOString()],
   ]
 }
 
@@ -74,6 +89,22 @@ export function AboutSection() {
         }}
       >
         <summary className="cursor-pointer text-[var(--text-tertiary)]">Informações da tela</summary>
+        {info && (
+          <Button
+            variant="secondary"
+            size="sm"
+            className="mt-2"
+            onClick={() => {
+              const text = info.map(([label, value]) => `${label}: ${value}`).join('\n')
+              void navigator.clipboard.writeText(text).then(
+                () => toast.show('Medidas copiadas'),
+                () => toast.show('Não foi possível copiar — tire um print'),
+              )
+            }}
+          >
+            Copiar medidas
+          </Button>
+        )}
         {info && (
           <dl className="mt-2 flex flex-col gap-1.5">
             {info.map(([label, value]) => (

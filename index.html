@@ -14,7 +14,11 @@
     <link rel="icon" type="image/png" href="icons/favicon-32.png?v=3" />
     <link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png?v=3" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <!-- "black" (barra de status preta e sólida, com o app começando logo abaixo dela) no lugar de
+         "black-translucent": no iPhone 15 do usuário, com o translúcido o iOS media a área do app ~59 px
+         menor que a tela (a barra de abas ficava ~60 px acima da borda de baixo, mesmo no app instalado).
+         Exige remover e adicionar o ícone de novo na tela inicial pra valer. -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="apple-mobile-web-app-title" content="Rômulo" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="theme-color" content="#060606" />
