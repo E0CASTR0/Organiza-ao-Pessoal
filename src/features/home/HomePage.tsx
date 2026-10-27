@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Avatar } from '@/components/ui/Avatar'
@@ -9,7 +9,7 @@ import { TextField } from '@/components/ui/TextField'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { ProgressRing } from '@/components/ui/ProgressRing'
-import { TrashIcon, CalendarIcon, ReceiptIcon, PlusIcon, MinusIcon, GripIcon, DropIcon, FlameIcon, DumbbellIcon, ChevronRightIcon } from '@/components/ui/icons'
+import { TrashIcon, CalendarIcon, ReceiptIcon, PlusIcon, MinusIcon, GripIcon, DropIcon, FlameIcon, DumbbellIcon, ChevronRightIcon, ClockIcon } from '@/components/ui/icons'
 import { IconButton } from '@/components/ui/IconButton'
 import { ReorderableList } from '@/components/ui/ReorderableList'
 import { useRemoveWithUndo } from '@/components/ui/useRemoveWithUndo'
@@ -17,6 +17,8 @@ import { listGoals, listCompletionsByDate, addGoal, toggleGoalForDate, removeGoa
 import { listEventsByDate } from '@/db/repositories/events.repo'
 import { listFixedBills } from '@/db/repositories/fixedBills.repo'
 import { getActiveDiet } from '@/db/repositories/diets.repo'
+import { listRoutineBlocks } from '@/db/repositories/routine.repo'
+import { findNow } from '@/features/routine/routineStats'
 import { getGlasses, addGlasses, waterTargetGlasses, formatLiters, waterLiters } from '@/db/repositories/water.repo'
 import { getSettings } from '@/db/repositories/settings.repo'
 import { todayKey, formatDateHeader, capitalizeFirst, toWeekdayIndex, WEEKDAY_INITIAL } from '@/utils/date'
@@ -60,6 +62,18 @@ export function HomePage() {
   const todayEvents = useLiveQuery(() => listEventsByDate(today), [today]) ?? []
   const bills = useLiveQuery(() => listFixedBills(), []) ?? []
   const activeDiet = useLiveQuery(() => getActiveDiet(), [])
+  const routineBlocks = useLiveQuery(() => listRoutineBlocks(), [])
+
+  // o que a rotina diz que é pra fazer agora (e o que vem depois)
+  const routineNow = useMemo(() => {
+    if (!routineBlocks || routineBlocks.length === 0) return null
+    const index = toWeekdayIndex(now)
+    return findNow(
+      routineBlocks.filter((b) => b.weekday === index),
+      routineBlocks.filter((b) => b.weekday === (index + 6) % 7),
+      now,
+    )
+  }, [routineBlocks, now])
 
   const ready = stats !== undefined && glasses !== undefined && upcomingEvents !== undefined
   const waterGoal = waterTargetGlasses(settings)
@@ -229,6 +243,27 @@ export function HomePage() {
           </>
         )}
       </section>
+
+      {routineNow && (routineNow.current || routineNow.next) && (
+        <Link to="/rotina/dia-a-dia" className="surface surface-interactive press flex items-center gap-3 rounded-[var(--radius-md)] p-3.5">
+          <span className="surface surface-raised flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-sm)] text-[var(--accent)]">
+            <ClockIcon width={20} height={20} />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm text-[var(--text-secondary)]">{routineNow.current ? 'Agora na sua rotina' : 'Próximo na sua rotina'}</span>
+            <span className="block truncate font-medium text-[var(--text-primary)]">
+              {routineNow.current ? routineNow.current.title : routineNow.next?.title}
+              {!routineNow.current && routineNow.next && <span className="font-normal text-[var(--text-secondary)]"> · às {routineNow.next.start}</span>}
+            </span>
+            {routineNow.current && routineNow.next && (
+              <span className="block truncate text-xs text-[var(--text-tertiary)]">
+                Depois, às {routineNow.next.start}: {routineNow.next.title}
+              </span>
+            )}
+          </span>
+          <ChevronRightIcon width={18} height={18} className="shrink-0 text-[var(--text-tertiary)]" />
+        </Link>
+      )}
 
       {workout && (
         <Link to="/rotina/treino" className="surface surface-interactive press flex items-center gap-3 rounded-[var(--radius-md)] p-3.5">

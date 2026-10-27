@@ -188,6 +188,25 @@ export interface SavingsEntry {
   createdAt: string
 }
 
+export const ROUTINE_CATEGORIES = ['Estudo', 'Corpo', 'Comunicação', 'Vida prática', 'Fé', 'Trabalho', 'Livre', 'Rotina', 'Sono'] as const
+export type RoutineCategory = (typeof ROUTINE_CATEGORIES)[number]
+
+/** Um bloco da rotina semanal ("Minha rotina"): o que fazer, de que hora a que hora, num dia da semana. */
+export interface RoutineBlock {
+  id: string
+  weekday: 0 | 1 | 2 | 3 | 4 | 5 | 6 // 0 = segunda ... 6 = domingo
+  start: string // 'HH:mm'
+  end: string // 'HH:mm' — vazio quando o bloco não tem hora de fim (ex: trabalho)
+  title: string
+  skill: string // habilidade que o bloco treina (agrupa o gráfico de horas)
+  category: RoutineCategory
+  detail: string
+  /** Habilidade em foco do dia (a de comunicação, por exemplo) — aparece no resumo do dia. */
+  focus?: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 /** Quais lembretes o usuário quer receber. */
 export interface NotificationPrefs {
   enabled: boolean
@@ -217,6 +236,7 @@ export interface Settings {
   /** Meta diária que é marcada sozinha quando a água fecha: undefined = detectar pelo nome ("água"), null = nenhuma, id = essa meta. */
   waterLinkedGoalId?: string | null
   savingsGoal?: number | null // meta da Caixinha em reais
+  routineSeeded?: boolean // marca que a rotina semanal ("Minha rotina") já foi adicionada uma vez
   notifications?: NotificationPrefs
   updatedAt: string
 }

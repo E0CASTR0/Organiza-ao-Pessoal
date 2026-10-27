@@ -1,5 +1,6 @@
 import Dexie, { type EntityTable } from 'dexie'
 import { addDays, toDateKey } from '../utils/date'
+import { buildRoutineSeed } from './routineSeed'
 import type {
   DailyGoal,
   DailyGoalCompletion,
@@ -22,6 +23,7 @@ import type {
   TrashItem,
   WaterLog,
   SavingsEntry,
+  RoutineBlock,
 } from './models'
 
 export const db = new Dexie('organizacao-pessoal') as Dexie & {
@@ -46,6 +48,7 @@ export const db = new Dexie('organizacao-pessoal') as Dexie & {
   trashItems: EntityTable<TrashItem, 'id'>
   waterLogs: EntityTable<WaterLog, 'id'>
   savingsEntries: EntityTable<SavingsEntry, 'id'>
+  routineBlocks: EntityTable<RoutineBlock, 'id'>
 }
 
 // Observação: campos booleanos (bought, completed, isActive...) não entram como índice
@@ -281,6 +284,32 @@ db.version(6).stores({
   savingsEntries: 'id, date',
 })
 
+// v7: rotina semanal ("Minha rotina"). Também só ADICIONA uma tabela.
+db.version(7).stores({
+  dailyGoals: 'id, order',
+  dailyGoalCompletions: 'id, goalId, date',
+  events: 'id, date',
+  monthlyPriorities: 'id, month, order',
+  shoppingItems: 'id, order',
+  workTasks: 'id, order',
+  notes: 'id, updatedAt',
+  investmentCategories: 'id, order',
+  investments: 'id, categoryId',
+  investmentReturns: 'id, investmentId, month',
+  workoutDays: 'id, weekday, order',
+  exercises: 'id, workoutDayId, order',
+  diets: 'id',
+  dietMealItems: 'id, dietId, meal, order',
+  fixedBills: 'id, dueDay, order',
+  fixedBillPayments: 'id, fixedBillId, month',
+  profile: 'id',
+  settings: 'id',
+  trashItems: 'id, entityType, deletedAt',
+  waterLogs: 'id, date',
+  savingsEntries: 'id, date',
+  routineBlocks: 'id, weekday',
+})
+
 /** Garante as linhas singleton (profile/settings) e os dados iniciais na primeira vez que o app abre.
  * Roda tudo dentro de UMA transação: como o React.StrictMode (dev) dispara o efeito de montagem duas
  * vezes, duas chamadas concorrentes a essa função podem entrelaçar suas leituras/escritas — envolver
@@ -339,7 +368,7 @@ async function moveBarbeariaToTuesday(now: string) {
 export async function ensureSeedData() {
   const now = new Date().toISOString()
 
-  await db.transaction('rw', [db.settings, db.profile, db.investmentCategories, db.workoutDays, db.events, db.trashItems], async () => {
+  await db.transaction('rw', [db.settings, db.profile, db.investmentCategories, db.workoutDays, db.events, db.trashItems, db.routineBlocks], async () => {
     let settings = await db.settings.get('settings')
     if (!settings) {
       settings = { id: 'settings', theme: 'dark', updatedAt: now }
@@ -380,6 +409,12 @@ export async function ensureSeedData() {
     if (!seededNow && !settings.barbeariaOnTuesday) {
       await moveBarbeariaToTuesday(now)
       await db.settings.update('settings', { barbeariaOnTuesday: true })
+    }
+
+    // a rotina semanal entra uma única vez; depois os blocos são do usuário (editar/apagar → Lixeira)
+    if (!settings.routineSeeded) {
+      if ((await db.routineBlocks.count()) === 0) await db.routineBlocks.bulkAdd(buildRoutineSeed(now))
+      await db.settings.update('settings', { routineSeeded: true })
     }
 
     const profile = await db.profile.get('profile')

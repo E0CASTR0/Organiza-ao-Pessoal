@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useToast } from '@/components/ui/ToastContext'
 import { getSettings } from '@/db/repositories/settings.repo'
-import { collectReminders, markSent, DEFAULT_PREFS } from '@/utils/reminders'
+import { collectReminders, markSent, reminderText, DEFAULT_PREFS } from '@/utils/reminders'
 import { showSystemNotification } from '@/utils/notify'
 
 const CHECK_EVERY_MS = 60_000
@@ -36,7 +36,7 @@ export function RemindersRunner() {
           void showSystemNotification(reminder.title, reminder.body, reminder.key)
           // aviso dentro do app: um por vez, espaçados, pra um não cobrir o outro
           window.setTimeout(() => {
-            if (!cancelled && document.visibilityState === 'visible') toast.show(`${reminder.title}. ${reminder.body}`)
+            if (!cancelled && document.visibilityState === 'visible') toast.show(reminderText(reminder))
           }, index * 6000)
         }
       } finally {

@@ -25,6 +25,7 @@ const ENTITY_LABELS: Record<string, string> = {
   dietMealItems: 'Prato da dieta',
   fixedBills: 'Conta fixa',
   savingsEntries: 'Lançamento da Caixinha',
+  routineBlocks: 'Bloco da rotina',
 }
 
 export function TrashPage() {

@@ -4,6 +4,7 @@ import { SegmentedControl } from '@/components/ui/SegmentedControl'
 import { DumbbellIcon } from '@/components/ui/icons'
 
 const segments = [
+  { value: 'dia-a-dia', label: 'Dia a dia' },
   { value: 'treino', label: 'Treino' },
   { value: 'dieta', label: 'Dieta' },
 ]
@@ -11,7 +12,7 @@ const segments = [
 export function RoutineLayout() {
   const location = useLocation()
   const navigate = useNavigate()
-  const current = segments.find((s) => location.pathname.endsWith(s.value))?.value ?? 'treino'
+  const current = segments.find((s) => location.pathname.endsWith(s.value))?.value ?? 'dia-a-dia'
 
   return (
     <div className="reveal flex flex-col gap-5">

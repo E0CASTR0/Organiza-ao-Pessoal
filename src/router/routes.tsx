@@ -9,6 +9,7 @@ import { NotesPage } from '@/features/lists/NotesPage'
 import { NotesStandalonePage } from '@/features/lists/NotesStandalonePage'
 import { NoteViewPage } from '@/features/lists/NoteViewPage'
 import { RoutineLayout } from '@/features/routine/RoutineLayout'
+import { RoutineDayPage } from '@/features/routine/RoutineDayPage'
 import { WorkoutPage } from '@/features/routine/WorkoutPage'
 import { DietPage } from '@/features/routine/DietPage'
 import { MorePage } from '@/features/more/MorePage'
@@ -37,7 +38,8 @@ export function AppRoutes() {
       <Route path="/listas/notas/:id" element={<NoteViewPage />} />
 
       <Route path="/rotina" element={<RoutineLayout />}>
-        <Route index element={<Navigate to="treino" replace />} />
+        <Route index element={<Navigate to="dia-a-dia" replace />} />
+        <Route path="dia-a-dia" element={<RoutineDayPage />} />
         <Route path="treino" element={<WorkoutPage />} />
         <Route path="dieta" element={<DietPage />} />
       </Route>
